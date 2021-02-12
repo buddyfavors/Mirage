@@ -1,0 +1,31 @@
+{
+    "795282757630165002":{
+        "prefix":"+",
+        "invitelogChannel":"795282759336591394",
+        "banlogChannel":"795282759618527234",
+        "kicklogChannel":"795282759618527234",
+        "msglogChannel":"795282759336591393",
+        "memberlogChannel":"795282759618527234",
+        "joinlogChannel":"795282759618527232",
+        "ventChannel":"795282760117125153",
+        "confessChannel":"795282760398929966",
+        "lounge":"795282759840432135",
+        "taskChannel":"795282760398929962",
+        "askdmchannel": "795282759840432137"
+    },
+
+    "768896221556506724":{
+        "prefix":"+",
+        "invitelogChannel":"787028987116781628",
+        "banlogChannel":"787035189649342475",
+        "kicklogChannel":"787035189649342475",
+        "msglogChannel":"772569471880921100",
+        "memberlogChannel":"786972964557422632",
+        "joinlogChannel":"787029058088206367",
+        "ventChannel":"772885182499782713",
+        "confessChannel":"772864120127094844",
+        "lounge":"772552570493075456",
+        "taskChannel":"772558977174601728",
+        "askdmchannel": "772552655162703882"
+    }
+}

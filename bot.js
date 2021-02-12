@@ -1,5 +1,3 @@
-const { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require("constants");
-
 process.on('unhandledRejection', async error => {
 await console.log('unhandled promise rejection', error);
 });
