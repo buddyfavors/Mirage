@@ -123,6 +123,23 @@ try {
             await console.log(`BOT: Ready at ${client.readyAt}`);
             await console.log(`BOT: Random Message Interval set to ${randomBonus}`);
 
+            //QOTD
+            setInterval(async function () {
+                var games = JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
+                var i = Math.floor(Math.random() * games["QOTD"].questions.length) + 1;
+                var qotd = games["QOTD"].questions[i];
+                var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
+                client.channels.cache.get("774302860312576010").send(question);
+            }, (12 * 60 * 60 * 100));
+            
+            //NHIE
+            setInterval(async function () {
+                var games = JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
+                var i = Math.floor(Math.random() * games["NHIE"].questions.length) + 1;
+                var qotd = games["NHIE"].questions[i];
+                var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
+                client.channels.cache.get("716828911727804487").send(question);
+            }, (12 * 60 * 60 * 100));
         } catch (err) {
             await console.log(err);
         }
@@ -139,13 +156,13 @@ try {
         const isValidCommand = (message, cmdName) => message.content.toLowerCase().startsWith(prefix + cmdName);
 
         //Vent anon
-        if(message.channel.type === 'dm' && message.content.toLowerCase().startsWith("vent")){
+        if (message.channel.type === 'dm' && message.content.toLowerCase().startsWith("vent")) {
             var embed = new MessageEmbed().setDescription(message.content.split(" ").slice(1).join(" "));
             await client.guilds.cache.get("715701127181631527").channels.cache.get("716825375187009546").send(embed);
             await embed.setTitle("Vent")
-            .addField("User", message.author.username, true)
-            .addField("User ID", message.author.id, true)
-            .addField("Timestamp", message.createdAt, true);
+                .addField("User", message.author.username, true)
+                .addField("User ID", message.author.id, true)
+                .addField("Timestamp", message.createdAt, true);
             await message.react('<a:tick:794230124961988609>');
             await client.guilds.cache.get("715701127181631527").channels.cache.get("809849380806721556").send(embed);
 
