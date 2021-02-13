@@ -1603,7 +1603,14 @@ try {
                     }
                 }
 
-
+                //Porn Commands
+                {
+                    //+yiff
+                    if(isValidCommand(message, "yiff"))
+                    {
+                        
+                    }
+                }
             }
             //In case of fatal error
             catch (error) {
