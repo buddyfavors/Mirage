@@ -1,15 +1,9 @@
-process.on('unhandledRejection', async error => {
-    await console.log('unhandled promise rejection', error);
-});
-
 try {
     //Requirements and libs imports
     require("dotenv").config();
     const {
         Client,
         MessageEmbed,
-        Webhook,
-        User
     } = require('discord.js');
     const client = new Client();
     const wait = require('util').promisify(setTimeout);
@@ -36,6 +30,7 @@ try {
 
     //Run initial setup when client is ready
     client.on('ready', async () => {
+        //Connect to the Database for verifications
         try {
             //connect to db
             await db.authenticate()
@@ -46,108 +41,116 @@ try {
             //initialise all database models.
             await verification.init(db);
             await verification.sync();
-
-            setInterval(async () => {
-                //Set the presence of the bot
-                await client.user.setPresence({
-                    status: 'online',
-                    activity: {
-                        name: 'My Sister Servers',
-                        type: 'WATCHING'
-                    }
-                });
-            }, 3600000);
-
-            setInterval(async function () {
-                birthdaysData = await JSON.parse(fs.readFileSync('storage/birthdays.json', 'utf8'));
-                var members = Object.keys(birthdaysData);
-                var todaysbirths = {};
-                var length = Object.keys(birthdaysData).length;
-                var todayDD = Date().toString().split(" ").slice(2, 3).join(" ");
-                var todayMM = Date().toString().split(" ").slice(1, 2).join(" ");
-                switch (todayMM) {
-                    case "Jan":
-                        todayMM = "01";
-                        break;
-                    case "Feb":
-                        todayMM = "02";
-                        break;
-                    case "Mar":
-                        todayMM = "03";
-                        break;
-                    case "Apr":
-                        todayMM = "04";
-                        break;
-                    case "May":
-                        todayMM = "05";
-                        break;
-                    case "Jun":
-                        todayMM = "06";
-                        break;
-                    case "Jul":
-                        todayMM = "07";
-                        break;
-                    case "Aug":
-                        todayMM = "08";
-                        break;
-                    case "Sep":
-                        todayMM = "09";
-                        break;
-                    case "Oct":
-                        todayMM = "10";
-                        break;
-                    case "Nov":
-                        todayMM = "11";
-                        break;
-                    case "Dec":
-                        todayMM = "12";
-                        break;
-                }
-                var i = 0
-                var announce = ":tada:Todays Birthdays are:\n\n";
-                await members.forEach(member => {
-                    if (birthdaysData[member.replace("\"", "")].birthdate === `${todayDD}/${todayMM}`) {
-                        todaysbirths[i] = member;
-                        i++
-                        announce = announce + `${client.users.cache.get(member.replace("\"", ""))}\n`;
-                    }
-                });
-                if (Object.keys(todaysbirths).length === 0) {
-                    return;
-                } else {
-                    client.channels.cache.get(guilddata["768896221556506724"].lounge).send(announce + "\n:cake:We here at purgatory wish them a happy birthday! :cake:");
-                }
-            }, 86400000);
-
-            //Log that bot is ready
-            await console.log(`BOT: Ready at ${client.readyAt}`);
-            await console.log(`BOT: Random Message Interval set to ${randomBonus}`);
-
-            //QOTD
-            setInterval(async function () {
-                var games = JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-                var i = Math.floor(Math.random() * games["QOTD"].questions.length) + 1;
-                var qotd = games["QOTD"].questions[i];
-                var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
-                client.channels.cache.get("774302860312576010").send(question);
-            }, (12 * 60 * 60 * 100));
-            
-            //NHIE
-            setInterval(async function () {
-                var games = JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-                var i = Math.floor(Math.random() * games["NHIE"].questions.length) + 1;
-                var qotd = games["NHIE"].questions[i];
-                var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
-                client.channels.cache.get("716828911727804487").send(question);
-            }, (12 * 60 * 60 * 100));
         } catch (err) {
             await console.log(err);
         }
+
+        //Log that bot is ready
+        await console.log(`BOT: Ready at ${client.readyAt}`);
+        await console.log(`BOT: Random Message Interval set to ${randomBonus}`);
+
+        //set bot status
+        setInterval(async () => {
+            //Set the presence of the bot
+            await client.user.setPresence({
+                status: 'online',
+                activity: {
+                    name: 'My Sister Servers',
+                    type: 'WATCHING'
+                }
+            });
+        }, 3600000);
+
+        //announce birthdays
+        setInterval(async function () {
+            birthdaysData = await JSON.parse(fs.readFileSync('storage/birthdays.json', 'utf8'));
+            var members = Object.keys(birthdaysData);
+            var todaysbirths = {};
+            var length = Object.keys(birthdaysData).length;
+            var todayDD = Date().toString().split(" ").slice(2, 3).join(" ");
+            var todayMM = Date().toString().split(" ").slice(1, 2).join(" ");
+            switch (todayMM) {
+                case "Jan":
+                    todayMM = "01";
+                    break;
+                case "Feb":
+                    todayMM = "02";
+                    break;
+                case "Mar":
+                    todayMM = "03";
+                    break;
+                case "Apr":
+                    todayMM = "04";
+                    break;
+                case "May":
+                    todayMM = "05";
+                    break;
+                case "Jun":
+                    todayMM = "06";
+                    break;
+                case "Jul":
+                    todayMM = "07";
+                    break;
+                case "Aug":
+                    todayMM = "08";
+                    break;
+                case "Sep":
+                    todayMM = "09";
+                    break;
+                case "Oct":
+                    todayMM = "10";
+                    break;
+                case "Nov":
+                    todayMM = "11";
+                    break;
+                case "Dec":
+                    todayMM = "12";
+                    break;
+            }
+            var i = 0
+            var announce = ":tada:Todays Birthdays are:\n\n";
+            await members.forEach(member => {
+                if (birthdaysData[member.replace("\"", "")].birthdate === `${todayDD}/${todayMM}`) {
+                    todaysbirths[i] = member;
+                    i++
+                    announce = announce + `${client.users.cache.get(member.replace("\"", ""))}\n`;
+                }
+            });
+            if (Object.keys(todaysbirths).length === 0) {
+                return;
+            } else {
+                client.channels.cache.get(guilddata["768896221556506724"].lounge).send(announce + "\n:cake:We here at purgatory wish them a happy birthday! :cake:");
+            }
+        }, 86400000);
+        
+        //QOTD
+        setInterval(async function () {
+            var games = JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
+            var i = Math.floor(Math.random() * games["QOTD"].questions.length) + 1;
+            var qotd = games["QOTD"].questions[i];
+            var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
+            client.channels.cache.get("774302860312576010").send(question);
+        }, (12 * 60 * 60 * 100));
+
+        //NHIE
+        setInterval(async function () {
+            var games = JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
+            var i = Math.floor(Math.random() * games["NHIE"].questions.length) + 1;
+            var qotd = games["NHIE"].questions[i];
+            var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
+            client.channels.cache.get("716828911727804487").send(question);
+        }, (12 * 60 * 60 * 100));
     });
 
-    client.on('shardError', error => {
-        console.log("Websocket error", error);
-    });
+    //Error Handling
+    {
+        client.on('shardError', error => {
+            console.log("Websocket error", error);
+        });
+        process.on('unhandledRejection', async error => {
+            await console.log('unhandled promise rejection', error);
+        });
+    }
 
     //All Main commands
     client.on('message', async function (message) {
