@@ -1194,12 +1194,12 @@ try {
                 if (await AuthorRoleCache.get("804129560840896562") || message.author.id === "577539199708823573") {
                     let args = message.content.split(' ').slice(1);
 
-                    //Status
-                    if (isValidCommand(message, "uptime")) {
-                        await message.channel.send(`Uptime: ${process.uptime().toString()}`);
+                    //View stats about the bot - +status
+                    if (isValidCommand(message, "status")) {
+                        await message.channel.send(`Uptime: ${(Math.floor(process.uptime())/60).toString()} Minutes\nMemory Usage: ${process.memoryUsage().toString()}`);
                     }
 
-                    //+send
+                    //Send Message to channel - +send <channel ID> <message>
                     if (isValidCommand(message, "send")) {
                         var channel = args[0];
                         var announcement = await args.slice(1).join(" ");
@@ -1208,13 +1208,14 @@ try {
                         await message.react('<a:tick:794230124961988609>');
                     }
 
-
-                    //view MC
+                    //view Message Count - +viewmc
                     if (isValidCommand(message, "viewmc")) {
                         await message.channel.send(`Message Count: ${MessageCount}`);
                         await message.channel.send(`Random Bonus: ${randomBonus}`);
                         await message.channel.send(`Free Money: ${FreeMoney}`);
                     }
+
+                    //reset Message Count - +resetmc
                     if (isValidCommand(message, "resetmc")) {
                         MessageCount = 0;
                         FreeMoney = 0;
@@ -1222,7 +1223,8 @@ try {
                         await message.channel.send(`Random Bonus: ${randomBonus}`);
                         await message.channel.send(`Free Money: ${FreeMoney}`);
                     }
-                    //+note @user [reason]
+
+                    //Add user note - +note @user [reason]
                     if (isValidCommand(message, "note")) {
                         let member = await message.guild.members.cache.get(await normaliseID(args[0]));
                         let reason = await args.slice(1).join(" ");
@@ -1240,7 +1242,7 @@ try {
                         message.channel.send("I have successfully added that to the log file!")
                     }
 
-                    //+infrac @user
+                    //View infractions of user - +infrac @user
                     if (isValidCommand(message, "infrac")) {
                         let id = args[0];
                         var member = message.guild.members.cache.get(await normaliseID(args[0]));
@@ -1464,6 +1466,7 @@ try {
 
                     //+verreq
                     if (isValidCommand(message, "verreq")) {
+                        await message.delete();
                         await message.channel.send("Hi there! I'm Mirage, Night Visions' Helper. To help get you verified, please follow the steps below, then staff will review this and verify you! (Please be patient though as the staff have a life outside of discord as well!!)\nTo verify, please do the following:\n➤ Step 1. Send a picture of your ID and a piece of paper that reads \"This servers name, todays date and discord username\"\n➤ Step 2. Send a second picture of you holding the ID and the piece of paper close to your face so we can verify that the ID does belong to you.");
                         await message.channel.send("Also please note we do NOT need to see your Address, License number, name, etc.\nWe only require the ID type, expiry date, your picture and DOB Visible")
                     }
@@ -1567,6 +1570,7 @@ try {
                             message.channel.send(`Volume set to: ${serverqueue.volume}`)
                             const dispatcher = await serverqueue.connection.setVolumeLogarithmic(await serverqueue.volume / 5)
                         }
+                        
                     } catch (error) {
                         await console.log(error);
                         await message.channel.send("Whoops! Something went wrong with what you just did! Try again or ask <@!577539199708823573> for help!")
