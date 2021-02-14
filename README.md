@@ -8,7 +8,7 @@ Mirage is a custom made discord bot for Night Visions 18+. She currently has 53 
 
 Shows the current status of the bot including Uptime and Memory Usage
 
-## +send \&lt;Channel ID\&gt; \&lt;Message\&gt;
+## +send \<Channel ID\> \<Message\>
 
 Sends a message to the specified channel
 
@@ -20,27 +20,27 @@ Views the current message count of the bot – used for server currency
 
 Resets the current message count in the event it doesn&#39;t auto reset – used for server currency
 
-## +note \&lt;@user or User ID\&gt; \&lt;reason\&gt;
+## +note \<@user or User ID\> \<reason\>
 
 Adds a note about the user with the reason specified
 
-## +infrac \&lt;@user or User ID\&gt;
+## +infrac \<@user or User ID\>
 
 Views all infractions including warns, kicks and notes for the user specified
 
-## +remnote \&lt;@user or User ID\&gt; \&lt;Infrac ID\&gt;
+## +remnote \<@user or User ID\> \<Infrac ID\>
 
 Removes a specific infraction from a user – NON FUNCTIONAL
 
-## +whois \&lt;@user or User ID\&gt;
+## +whois \<@user or User ID\>
 
 Displays information about a specified user such as account age and join server age – NON FUNCTIONAL
 
-## +cvc \&lt;@user or User ID\&gt;
+## +cvc \<@user or User ID\>
 
 Check the verification status of members from sister servers (always ask for a screenshot as well, just in case they left
 
-## -verify \&lt;@user or User ID\&gt;
+## -verify \<@user or User ID\>
 
 Runs at the YAGPDB Verification command. Logs the verification to the hub and database
 
@@ -48,15 +48,15 @@ Runs at the YAGPDB Verification command. Logs the verification to the hub and da
 
 For first time use only. Adds all users to the message count document and sends startup message.
 
-## +resetbal \&lt;@user or User ID\&gt;
+## +resetbal \<@user or User ID\>
 
 Resets the specified users balance to 0
 
-## +givecredits \&lt;@user or User ID\&gt; \&lt;credits\&gt;
+## +givecredits \<@user or User ID\> \<credits\>
 
 Adds the specified amount of credits to the user mentioned
 
-## +announce \&lt;announcement\&gt;
+## +announce \<announcement\>
 
 Sends the specified message to the announcements channel as the server
 
@@ -70,7 +70,7 @@ Send a message requesting the verification details from the user
 
 # Birthdays
 
-## +bd-set \&lt;DD/MM\&gt;
+## +bd-set \<DD/MM\>
 
 Sets a user&#39;s birthday for announcements if the format is correct
 
@@ -98,7 +98,7 @@ Sets the bots volume in VC
 
 # Server Currency
 
-## +buy \&lt;role name\&gt;
+## +buy \<role name\>
 
 If the user has enough credits, deducts them and adds the role to the user
 
@@ -106,7 +106,7 @@ If the user has enough credits, deducts them and adds the role to the user
 
 Not triggered by a command, for every message the user says, they gain one credit
 
-## +give \&lt;@user\&gt; \&lt;credits\&gt;
+## +give \<@user\> \<credits\>
 
 If the user has the amount of credits, it transfers them to the mentioned user
 
@@ -138,7 +138,7 @@ Every 12 hours, a random question will be sent to the specified channel
 
 # Brat Commands
 
-## +bratadd \&lt;@user or user ID\&gt;
+## +bratadd \<@user or user ID\>
 
 Allows Doms and switches to give Subs and Switches a &quot;brat point&quot; which after every 5 will give out a punishment for them
 
@@ -154,51 +154,51 @@ Mirage Can teach you maths! Any message with 2+2 in it will teach you basic math
 
 # Emotes
 
-## +hug \&lt;@user\&gt;
+## +hug \<@user\>
 
 Sends an emote that Hugs the mentioned user
 
-## +kiss \&lt;@user\&gt;
+## +kiss \<@user\>
 
 Sends an emote that kisses the mentioned user
 
-## +slap \&lt;@user\&gt;
+## +slap \<@user\>
 
 Sends an emote that Slaps the mentioned user
 
-## +bite \&lt;@user\&gt;
+## +bite \<@user\>
 
 Sends an emote that Bites the mentioned user
 
-## +cuddle \&lt;@user\&gt;
+## +cuddle \<@user\>
 
 Sends an emote that Cuddles the mentioned user
 
-## +pat \&lt;@user\&gt;
+## +pat \<@user\>
 
 Sends an emote that pats the mentioned user
 
-## +poke \&lt;@user\&gt;
+## +poke \<@user\>
 
 Sends an emote that Pokes the mentioned user
 
-## +lick \&lt;@user\&gt;
+## +lick \<@user\>
 
 Sends an emote that Licks the mentioned user
 
-## +suck \&lt;@user\&gt;
+## +suck \<@user\>
 
 Sends an emote that Sucks the mentioned user
 
-## +spank \&lt;@user\&gt;
+## +spank \<@user\>
 
 Sends an emote that Spanks the mentioned user
 
-## +fuck \&lt;@user\&gt;
+## +fuck \<@user\>
 
 Sends an emote that Fucks the mentioned user
 
-## +anal \&lt;@user\&gt;
+## +anal \<@user\>
 
 Sends an emote that Fucks the mentioned user in the ass
 
