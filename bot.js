@@ -187,10 +187,7 @@ try {
                         var embed = new MessageEmbed()
                             .setTitle("Help")
                             .setColor("#00ff00")
-                            .setDescription("List all available commands for Mira Bot. The server prefix is '+' and all commands must be prefaced with it.")
-                            .addField("Emotes", "+Hug @user\n+Kiss @user\n+Slap @user\n+Bite @user\n+Cuddle @user\n+Pat @user\n+Poke @user\n+Lick @user\n+Suck @user\n+Spank @user\n+Fuck @user\n+Anal @user")
-                            .addField("\nBrat Points", "+bratadd @user - only works for doms and switches, add a point to those naughty brats!\n+bp - view your current bratpoints")
-                            .addField("View Credentials", "+creds - view a list of my contributers");
+                            .setDescription("List of all available commands for Mira Bot can be found [here](https://github.com/skyethevixen/mirage). The server prefix is '+' and all commands must be prefaced with it.")
                         await message.channel.send(embed);
                     }
 
@@ -315,9 +312,7 @@ try {
                             return;
                         }
                         var oldcreds = parseInt(UserData[message.author.id].credits);
-                        await console.log(oldcreds);
                         var newcreds = oldcreds + 30;
-                        await console.log(newcreds);
                         UserData[message.author.id].credits = newcreds;
                         await writedata();
                         await message.channel.send(`${message.author} Collected 30 Credits`)
