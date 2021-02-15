@@ -155,9 +155,6 @@ try {
     //All Main commands
     client.on('message', async function (message) {
         if (message.author.bot) return;
-        let AuthorRoleCache = await message.guild.members.cache.get(message.author.id).roles.cache;
-        const isValidCommand = (message, cmdName) => message.content.toLowerCase().startsWith(prefix + cmdName);
-
         //Vent anon
         if (message.channel.type === 'dm' && message.content.toLowerCase().startsWith("vent")) {
             var embed = new MessageEmbed().setDescription(message.content.split(" ").slice(1).join(" "));
@@ -168,8 +165,10 @@ try {
                 .addField("Timestamp", message.createdAt, true);
             await message.react('<a:tick:794230124961988609>');
             await client.guilds.cache.get("715701127181631527").channels.cache.get("809849380806721556").send(embed);
-
+            return;
         }
+        let AuthorRoleCache = await message.guild.members.cache.get(message.author.id).roles.cache;
+        const isValidCommand = (message, cmdName) => message.content.toLowerCase().startsWith(prefix + cmdName);
 
         //Main NV Commands - Refactored
         if (message.guild === client.guilds.cache.get("715701127181631527") || message.guild === client.guilds.cache.get("806559513414991872") || message.guild === client.guilds.cache.get("789227902839422986")) {
