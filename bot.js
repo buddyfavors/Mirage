@@ -130,7 +130,7 @@ try {
             var qotd = games["QOTD"].questions[i];
             var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
             client.channels.cache.get("774302860312576010").send(question);
-        }, (4320000));
+        }, (43200000));
 
         //NHIE
         setInterval(async function () {
@@ -139,7 +139,7 @@ try {
             var qotd = games["NHIE"].questions[i];
             var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
             client.channels.cache.get("716828911727804487").send(question);
-        }, (4320000));
+        }, (43200000));
     });
 
     //Error Handling
