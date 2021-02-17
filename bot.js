@@ -125,20 +125,22 @@ try {
         
         //QOTD
         setInterval(async function () {
-            var games = JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-            var i = Math.floor(Math.random() * games["QOTD"].questions.length) + 1;
+            var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
+            var i = await Math.floor(Math.random() * games["QOTD"].questions.length) + 1;
             var qotd = games["QOTD"].questions[i];
+            var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309537331642378");
             var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
-            client.channels.cache.get("774302860312576010").send(question);
-        }, (43200000));
+            await client.channels.cache.get("724777838619918459").send(`${role}\n${question}`);
+        }, (86400000));
 
         //NHIE
         setInterval(async function () {
-            var games = JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-            var i = Math.floor(Math.random() * games["NHIE"].questions.length) + 1;
+            var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
+            var i = await Math.floor(Math.random() * games["NHIE"].questions.length) + 1;
             var qotd = games["NHIE"].questions[i];
+            var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309547514757121");
             var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
-            client.channels.cache.get("716828911727804487").send(question);
+            await client.channels.cache.get("716828911727804487").send(`${role}\n${question}`);
         }, (43200000));
     });
 
@@ -1704,15 +1706,15 @@ try {
     }
 
     //Member Add
-    client.on('guildMemberAdd', async function (member) {
-        if (!UserData[member.id] && member.guild.id === "715701127181631527") {
-            UserData[member.id] = {
-                credits: 0,
-                bratPoints: 0,
-                bpgiven: 0
-            }
-        };
-    });
+    // client.on('guildMemberAdd', async function (member) {
+    //     if (!UserData[member.id] && member.guild.id === "715701127181631527") {
+    //         UserData[member.id] = {
+    //             credits: 0,
+    //             bratPoints: 0,
+    //             bpgiven: 0
+    //         }
+    //     };
+    // });
 
     // //Custom VC
     // client.on('voiceStateUpdate', async function (oldState, newState){
