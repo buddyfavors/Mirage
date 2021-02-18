@@ -132,7 +132,8 @@ try {
             var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
             await client.channels.cache.get("724777838619918459").send(role);
             await client.channels.cache.get("724777838619918459").send(question);
-        }, 10000).then(setInterval(async function () {
+        }, 10000);
+        await setInterval(async function () {
             var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
             var i = await Math.floor(Math.random() * games["QOTD"].questions.length) + 1;
             var qotd = games["QOTD"].questions[i];
@@ -140,7 +141,7 @@ try {
             var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
             await client.channels.cache.get("724777838619918459").send(role);
             await client.channels.cache.get("724777838619918459").send(question);
-        }, (86400000)));
+        }, (86400000));
 
         //NHIE
         await setTimeout(async function() {
@@ -151,7 +152,8 @@ try {
             var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
             await client.channels.cache.get("716828911727804487").send(role);
             await client.channels.cache.get("716828911727804487").send(question);
-        }, 10000).then(await setInterval(async function () {
+        }, 10000);
+        await setInterval(async function () {
             var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
             var i = await Math.floor(Math.random() * games["NHIE"].questions.length) + 1;
             var qotd = games["NHIE"].questions[i];
@@ -159,7 +161,7 @@ try {
             var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
             await client.channels.cache.get("716828911727804487").send(role);
             await client.channels.cache.get("716828911727804487").send(question);
-        }, (43200000)));
+        }, (43200000));
     });
 
     //Error Handling
