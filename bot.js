@@ -122,15 +122,15 @@ try {
                 client.channels.cache.get(guilddata["768896221556506724"].lounge).send(announce + "\n:cake:We here at purgatory wish them a happy birthday! :cake:");
             }
         }, 86400000);
-        
+
         //QOTD
-        await setTimeout(async function() {
+        await setTimeout(async function () {
             var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
             var i = await Math.floor(Math.random() * games["QOTD"].questions.length) + 1;
             var qotd = games["QOTD"].questions[i];
             var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309537331642378");
             var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
-            await client.channels.cache.get("724777838619918459").send(role);
+            await client.channels.cache.get("724777838619918459").send("<@&811309537331642378>");
             await client.channels.cache.get("724777838619918459").send(question);
         }, 10000);
         await setInterval(async function () {
@@ -144,13 +144,13 @@ try {
         }, (86400000));
 
         //NHIE
-        await setTimeout(async function() {
+        await setTimeout(async function () {
             var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
             var i = await Math.floor(Math.random() * games["NHIE"].questions.length) + 1;
             var qotd = games["NHIE"].questions[i];
             var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309547514757121");
             var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
-            await client.channels.cache.get("716828911727804487").send(role);
+            await client.channels.cache.get("716828911727804487").send("<@&811309547514757121>");
             await client.channels.cache.get("716828911727804487").send(question);
         }, 10000);
         await setInterval(async function () {
@@ -1586,7 +1586,7 @@ try {
                             message.channel.send(`Volume set to: ${serverqueue.volume}`)
                             const dispatcher = await serverqueue.connection.setVolumeLogarithmic(await serverqueue.volume / 5)
                         }
-                        
+
                     } catch (error) {
                         await console.log(error);
                         await message.channel.send("Whoops! Something went wrong with what you just did! Try again or ask <@!577539199708823573> for help!")
@@ -1626,9 +1626,8 @@ try {
                 //Porn Commands
                 {
                     //+yiff
-                    if(isValidCommand(message, "yiff"))
-                    {
-                        
+                    if (isValidCommand(message, "yiff")) {
+
                     }
                 }
             }
