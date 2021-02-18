@@ -124,24 +124,42 @@ try {
         }, 86400000);
         
         //QOTD
-        setInterval(async function () {
+        await setTimeout(async function() {
             var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
             var i = await Math.floor(Math.random() * games["QOTD"].questions.length) + 1;
             var qotd = games["QOTD"].questions[i];
             var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309537331642378");
             var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
-            await client.channels.cache.get("724777838619918459").send(`${role}\n${question}`);
-        }, (86400000));
+            await client.channels.cache.get("724777838619918459").send(role);
+            await client.channels.cache.get("724777838619918459").send(question);
+        }, 10000).then(setInterval(async function () {
+            var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
+            var i = await Math.floor(Math.random() * games["QOTD"].questions.length) + 1;
+            var qotd = games["QOTD"].questions[i];
+            var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309537331642378");
+            var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
+            await client.channels.cache.get("724777838619918459").send(role);
+            await client.channels.cache.get("724777838619918459").send(question);
+        }, (86400000)));
 
         //NHIE
-        setInterval(async function () {
+        await setTimeout(async function() {
             var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
             var i = await Math.floor(Math.random() * games["NHIE"].questions.length) + 1;
             var qotd = games["NHIE"].questions[i];
             var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309547514757121");
             var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
-            await client.channels.cache.get("716828911727804487").send(`${role}\n${question}`);
-        }, (43200000));
+            await client.channels.cache.get("716828911727804487").send(role);
+            await client.channels.cache.get("716828911727804487").send(question);
+        }, 10000).then(await setInterval(async function () {
+            var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
+            var i = await Math.floor(Math.random() * games["NHIE"].questions.length) + 1;
+            var qotd = games["NHIE"].questions[i];
+            var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309547514757121");
+            var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
+            await client.channels.cache.get("716828911727804487").send(role);
+            await client.channels.cache.get("716828911727804487").send(question);
+        }, (43200000)));
     });
 
     //Error Handling
