@@ -139,7 +139,7 @@ try {
             var qotd = games["QOTD"].questions[i];
             var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309537331642378");
             var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
-            await client.channels.cache.get("724777838619918459").send(role);
+            await client.channels.cache.get("724777838619918459").send("<@&811309537331642378>");
             await client.channels.cache.get("724777838619918459").send(question);
         }, (86400000));
 
@@ -159,7 +159,7 @@ try {
             var qotd = games["NHIE"].questions[i];
             var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309547514757121");
             var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
-            await client.channels.cache.get("716828911727804487").send(role);
+            await client.channels.cache.get("716828911727804487").send("<@&811309547514757121>");
             await client.channels.cache.get("716828911727804487").send(question);
         }, (43200000));
     });
