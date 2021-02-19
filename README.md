@@ -69,7 +69,7 @@ Every 12 hours, a random Never Have I Ever question will be sent to the specifie
 
 ## Questions Of the Day
 
-Every 12 hours, a random question will be sent to the specified channel
+Every 24 hours, a random question will be sent to the specified channel
 
 # Brat Commands
 
