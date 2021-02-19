@@ -157,7 +157,7 @@ Allows users to post a nude to the specified channel and have it autodelete afte
 
 ## Suggestions
 
-Adds reactions to suggestions and sends it to the writeup channel in staff server
+Adds reactions to suggestions and sends it to staff
 
 ## +donate
 
