@@ -89,6 +89,10 @@ Mirage Can teach you maths! Any message with 2+2 in it will teach you basic math
 
 # Emotes
 
+## +pounce \<@user\>
+
+Sends an emote to pounce on the mentioned user
+
 ## +hug \<@user\>
 
 Sends an emote that Hugs the mentioned user
