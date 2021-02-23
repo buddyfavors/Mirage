@@ -414,6 +414,26 @@ try {
                         member = await message.guild.members.cache.get(await normaliseID(args[0]));
                     }
 
+                    //+pounce @user
+                    if (isValidCommand(message, "pounce")) {
+                        if (random === 1 || random === 4 || random === 7) {
+                            var embed = new MessageEmbed()
+                                .setImage(`https://i.postimg.cc/L80pDWtM/pounce3.gif`)
+                                .setTitle(`${message.author.username} Pounced at ${member.user.username}`);
+                            await message.channel.send(embed);
+                        } else if (random === 2 || random === 5 || random === 8) {
+                            var embed = new MessageEmbed()
+                                .setImage(`https://i.postimg.cc/Y21t7bH1/pounce2.gif`)
+                                .setTitle(`${message.author.username} Pounced at ${member.user.username}`);
+                            await message.channel.send(embed);
+                        } else {
+                            var embed = new MessageEmbed()
+                                .setImage(`https://i.postimg.cc/zGkNhBB3/pounce1.gif`)
+                                .setTitle(`${message.author.username} Pounced at ${member.user.username}`);
+                            await message.channel.send(embed);
+                        }
+                    }
+
                     //+Hug @user
                     if (isValidCommand(message, "hug")) {
                         if (random === 1 || random === 4 || random === 7) {
