@@ -126,7 +126,7 @@ try {
         //QOTD
         await setTimeout(async function () {
             var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-            var i = await Math.floor(Math.random() * games["QOTD"].questions.length) + 1;
+            var i = await Math.floor(Math.random() * games["QOTD"].questions.length - 1) + 1;
             var qotd = games["QOTD"].questions[i];
             var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309537331642378");
             var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
@@ -135,7 +135,7 @@ try {
         }, 10000);
         await setInterval(async function () {
             var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-            var i = await Math.floor(Math.random() * games["QOTD"].questions.length) + 1;
+            var i = await Math.floor(Math.random() * games["QOTD"].questions.length-1) + 1;
             var qotd = games["QOTD"].questions[i];
             var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309537331642378");
             var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
@@ -146,7 +146,7 @@ try {
         //NHIE
         await setTimeout(async function () {
             var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-            var i = await Math.floor(Math.random() * games["NHIE"].questions.length) + 1;
+            var i = await Math.floor(Math.random() * games["NHIE"].questions.length-1) + 1;
             var qotd = games["NHIE"].questions[i];
             var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309547514757121");
             var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
@@ -155,7 +155,7 @@ try {
         }, 10000);
         await setInterval(async function () {
             var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-            var i = await Math.floor(Math.random() * games["NHIE"].questions.length) + 1;
+            var i = await Math.floor(Math.random() * games["NHIE"].questions.length - 1) + 1;
             var qotd = games["NHIE"].questions[i];
             var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309547514757121");
             var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
