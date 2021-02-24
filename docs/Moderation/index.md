@@ -67,4 +67,4 @@ Send a message requesting the verification details from the user
 ## +setstatus <presence> <activity> <name>
 
 Sets a custom status (will be reset to default every 24 hours)
-For info on different parameters, (click here)[https://skyethevixen.github.io/Mirage/Moderation/Statuses "Custom Status Help"]
+For info on different parameters, [click here](https://skyethevixen.github.io/Mirage/Moderation/Statuses "Custom Status Help")
