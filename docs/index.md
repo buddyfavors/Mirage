@@ -159,6 +159,10 @@ Allows users to Confess and have it anonymised
 
 Got a question you want some advice about? Want advice on BDSM education? Ask it in the relevant channel and Mirage will anonymise it for you
 
+## +anon Lovense
+
+Want someone to play with your toy without the baggage of having to find out who they are and continue interacting with them? Me too! Send your link with the phrase "+anon" in front of it and it will be sent anonymously
+
 ## Flash-n-Dash
 
 Allows users to post a nude to the specified channel and have it autodelete after 60s

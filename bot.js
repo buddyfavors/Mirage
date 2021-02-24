@@ -269,6 +269,19 @@ try {
                         await message.channel.send("I do not have sufficient permissions to either send the confession, delete the inital message or log it. Please ensure i have this!!");
                     }
 
+                    //Anon Advice
+                    try {
+                        if (message.channel.id === "787076723938295859" && isValidCommand(message, "+anon")) {
+                            await message.delete();
+                            var embed = new MessageEmbed()
+                                .setTitle("Play with me!")
+                                .setDescription(message.content)
+                                .setColor(41034);
+                        }
+                    } catch {
+                        await message.channel.send("I do not have sufficient permissions to either send the confession, delete the inital message or log it. Please ensure i have this!!");
+                    }
+
                     //Flash-n-dash - Updated Channels to ID
                     if (message.channel.id === "756354194818203688") {
                         await message.delete({
