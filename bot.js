@@ -251,7 +251,7 @@ try {
 
                     //Anon Advice
                     try {
-                        if (message.channel.id === "814105814486876162") {
+                        if (message.channel.id === "814105814486876162" && isValidCommand(message, "+anon")) {
                             await message.delete();
                             var embed = new MessageEmbed()
                                 .setTitle("Anon asked...")
