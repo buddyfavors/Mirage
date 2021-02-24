@@ -59,7 +59,7 @@ try {
                     type: 'WATCHING'
                 }
             });
-        }, 3600000);
+        }, 86400000);
 
         //announce birthdays
         setInterval(async function () {
@@ -124,15 +124,15 @@ try {
         }, 86400000);
 
         //QOTD
-        await setTimeout(async function () {
-            var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-            var i = await Math.floor(Math.random() * games["QOTD"].questions.length - 1) + 1;
-            var qotd = games["QOTD"].questions[i];
-            var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309537331642378");
-            var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
-            await client.channels.cache.get("724777838619918459").send("<@&811309537331642378>");
-            await client.channels.cache.get("724777838619918459").send(question);
-        }, 10000);
+        // await setTimeout(async function () {
+        //     var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
+        //     var i = await Math.floor(Math.random() * games["QOTD"].questions.length - 1) + 1;
+        //     var qotd = games["QOTD"].questions[i];
+        //     var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309537331642378");
+        //     var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
+        //     await client.channels.cache.get("724777838619918459").send("<@&811309537331642378>");
+        //     await client.channels.cache.get("724777838619918459").send(question);
+        // }, 10000);
         await setInterval(async function () {
             var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
             var i = await Math.floor(Math.random() * games["QOTD"].questions.length-1) + 1;
@@ -144,15 +144,15 @@ try {
         }, (86400000));
 
         //NHIE
-        await setTimeout(async function () {
-            var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-            var i = await Math.floor(Math.random() * games["NHIE"].questions.length-1) + 1;
-            var qotd = games["NHIE"].questions[i];
-            var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309547514757121");
-            var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
-            await client.channels.cache.get("716828911727804487").send("<@&811309547514757121>");
-            await client.channels.cache.get("716828911727804487").send(question);
-        }, 10000);
+        // await setTimeout(async function () {
+        //     var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
+        //     var i = await Math.floor(Math.random() * games["NHIE"].questions.length-1) + 1;
+        //     var qotd = games["NHIE"].questions[i];
+        //     var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309547514757121");
+        //     var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
+        //     await client.channels.cache.get("716828911727804487").send("<@&811309547514757121>");
+        //     await client.channels.cache.get("716828911727804487").send(question);
+        // }, 10000);
         await setInterval(async function () {
             var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
             var i = await Math.floor(Math.random() * games["NHIE"].questions.length - 1) + 1;
@@ -243,40 +243,40 @@ try {
                                 .addField("TimeStamp", message.createdAt, true)
                                 .setDescription(message.content)
                                 .setThumbnail(message.author.avatarURL);
-                            await message.guild.channels.cache.get("779752686437400596").send(embed);
+                            await message.guild.channels.cache.get("809849380806721556").send(embed);
                         }
                     } catch {
                         await message.channel.send("I do not have sufficient permissions to either send the confession, delete the inital message or log it. Please ensure i have this!!");
                     }
 
                     //Anon Advice
-                    try {
-                        if (message.channel.id === "814105814486876162" && isValidCommand(message, "+anon")) {
+                        if (message.channel.id === "814105814486876162")
+                        {
+                            if(isValidCommand(message, "anon")) {
                             await message.delete();
                             var embed = new MessageEmbed()
                                 .setTitle("Anon asked...")
-                                .setDescription(message.content)
+                                .setDescription(await message.content.split(" ").slice(1).join(" "))
                                 .setColor(41034);
-                            await message.guild.channels.cache.get("814105905887969301").send(embed);
+                            await message.channel.send(embed);
                             await embed.setTitle("Advice")
                                 .addField("User", message.author.username, true)
                                 .addField("User ID", message.author.id, true)
                                 .addField("TimeStamp", message.createdAt, true)
                                 .setThumbnail(message.author.avatarURL);
-                            await message.guild.channels.cache.get("814106111371902996").send(embed);
+                            await message.guild.channels.cache.get("809849380806721556").send(embed);
                         }
-                    } catch {
-                        await message.channel.send("I do not have sufficient permissions to either send the confession, delete the inital message or log it. Please ensure i have this!!");
                     }
 
-                    //Anon Advice
+                    //Anon Lovense
                     try {
-                        if (message.channel.id === "787076723938295859" && isValidCommand(message, "+anon")) {
+                        if (message.channel.id === "787076723938295859" && isValidCommand(message, "anon")) {
                             await message.delete();
                             var embed = new MessageEmbed()
                                 .setTitle("Play with me!")
                                 .setDescription(message.content)
                                 .setColor(41034);
+                            await message.channel.send(embed);
                         }
                     } catch {
                         await message.channel.send("I do not have sufficient permissions to either send the confession, delete the inital message or log it. Please ensure i have this!!");
@@ -305,6 +305,7 @@ try {
                             }))
                             .addField("Suggestion", message.content);
                         await client.guilds.cache.get("715651719698186262").channels.cache.get("723369211585626212").send(embed);
+                        await message.guild.channels.cache.get("809849380806721556").send(embed);
                     }
 
                     //+donate
@@ -1622,6 +1623,18 @@ try {
                         await message.delete();
                         await message.channel.send("Hi there! I'm Mirage, Night Visions' Helper. To help get you verified, please follow the steps below, then staff will review this and verify you! (Please be patient though as the staff have a life outside of discord as well!!)\nTo verify, please do the following:\n➤ Step 1. Send a picture of your ID and a piece of paper that reads \"This servers name, todays date and discord username\"\n➤ Step 2. Send a second picture of you holding the ID and the piece of paper close to your face so we can verify that the ID does belong to you.");
                         await message.channel.send("Also please note we do NOT need to see your Address, License number, name, etc.\nWe only require the ID type, expiry date, your picture and DOB Visible")
+                    }
+
+                    //+setStatus
+                    if (isValidCommand(message, "setstatus")){
+                        var args = message.content.split(" ").slice(1)
+                        client.user.setPresence({
+                            status: args[0],
+                            activity: {
+                                type: args[1],
+                                name: args.slice(1).slice(1).join(" ")
+                            }
+                        })
                     }
                 }
 
