@@ -303,6 +303,90 @@ try {
                         await message.channel.send(embed);
                     }
 
+                    //+poll <topic> <opt 1> <opt 2> [additional up to 9]
+                    try{
+                        if(isValidCommand(message, "poll")){
+                            var args = message.content.split(' "').slice(1);
+                            var topic = args[0];
+                            var options = args.slice(0);
+                            console.log(options);
+                            var embed = new MessageEmbed()
+                            .setTitle(topic.substring(0, topic.length - 1))
+                            .setFooter(`Asked by: ${message.author.username}`)
+                            .setDescription("");
+                            await message.delete();
+                            for(var iCount = 1; iCount < options.length; iCount++){
+                                switch(iCount){
+                                    case 1:
+                                        await embed.setDescription(`${embed.description}\n1️⃣`)
+                                        break;
+                                    case 2:
+                                        await embed.setDescription(`${embed.description}\n2️⃣`)
+                                        break;
+                                    case 3:
+                                        await embed.setDescription(`${embed.description}\n3️⃣`);
+                                        break;
+                                    case 4:
+                                        await embed.setDescription(`${embed.description}\n4️⃣`);
+                                        break;
+                                    case 5:
+                                        await embed.setDescription(`${embed.description}\n5️⃣`);
+                                        break;
+                                    case 6:
+                                        await embed.setDescription(`${embed.description}\n6️⃣`);
+                                        break;
+                                    case 7:
+                                        await embed.setDescription(`${embed.description}\n7️⃣`)
+                                        break;
+                                    case 8:
+                                        await embed.setDescription(`${embed.description}\n8️⃣`);
+                                        break;
+                                    case 9:
+                                        await embed.setDescription(`${embed.description}\n9️⃣`);
+                                        break;
+                                }
+                                await embed.setDescription(`${embed.description} ${options[iCount].substring(0, options[iCount].length - 1)}`);
+                            };
+                            await message.channel.send(embed).then(async msg =>{
+                                for(var iCount = 1; iCount < options.length; iCount++){
+                                    switch(iCount){
+                                        case 1:
+                                            await msg.react(`1️⃣`)
+                                            break;
+                                        case 2:
+                                            await msg.react(`2️⃣`)
+                                            break;
+                                        case 3:
+                                            await msg.react(`3️⃣`);
+                                            break;
+                                        case 4:
+                                            await msg.react(`4️⃣`);
+                                            break;
+                                        case 5:
+                                            await msg.react(`5️⃣`);
+                                            break;
+                                        case 6:
+                                            await msg.react(`6️⃣`);
+                                            break;
+                                        case 7:
+                                            await msg.react(`7️⃣`)
+                                            break;
+                                        case 8:
+                                            await msg.react(`8️⃣`);
+                                            break;
+                                        case 9:
+                                            await msg.react(`9️⃣`);
+                                            break;
+                                    }
+                                }    
+                            });
+                        }
+                    }
+                    catch{
+                        message.channel.send("An error occured whilst creating the poll. Please ensure you use the format of ```+poll \"Title for poll\" \"Option 1\" \"Option 2\"...```")
+                    }
+
+
                 }
 
                 //Currency - Updated Channel ID's
