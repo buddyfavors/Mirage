@@ -155,7 +155,7 @@ Displays a list of credentials of those who helped make the server and bot possi
 
 Allows users to Confess and have it anonymised
 
-## Advice
+## +anon Advice
 
 Got a question you want some advice about? Want advice on BDSM education? Ask it in the relevant channel and Mirage will anonymise it for you
 
