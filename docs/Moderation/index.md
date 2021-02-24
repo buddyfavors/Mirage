@@ -63,3 +63,8 @@ Exits the bots code, used for safely restarting – DEV ONLY
 ## +verreq
 
 Send a message requesting the verification details from the user
+
+## +setstatus <presence> <activity> <name>
+
+Sets a custom status (will be reset to default every 24 hours)
+For info on different parameters, see https://skyethevixen.github.io/Mirage/Moderation/Statuses

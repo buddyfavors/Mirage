@@ -1627,7 +1627,6 @@ try {
 
                     //+setStatus
                     if (isValidCommand(message, "setstatus")){
-                        var args = message.content.split(" ").slice(1)
                         client.user.setPresence({
                             status: args[0],
                             activity: {
