@@ -2,7 +2,7 @@
 
 ## Command
 
-The command to set a custom status in mirage is "+setstatus \<presence\> <activity type> <name>"
+The command to set a custom status in mirage is "+setstatus \<presence\> \<activity type\> \<name\>"
 
 The activity type must be in ALL CAPS whilst the presence type must be in all lower case. Name can be any case
 
