@@ -284,7 +284,7 @@ try {
                         await message.react("✅");
                         await message.react("❌");
                         var embed = new MessageEmbed()
-                            .setAuthor(message.author)
+                            .setAuthor(message.author.username)
                             .setDescription("New Suggestion...")
                             .setThumbnail(message.author.avatarURL({
                                 size: 64,
