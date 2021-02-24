@@ -229,7 +229,7 @@ try {
                         await message.channel.send(embed);
                     }
 
-                    //confessions - need to Update confession log channel to be ID
+                    //Anon Confessions
                     try {
                         if (message.channel.id === "779752684827705364") {
                             await message.delete();
@@ -244,6 +244,26 @@ try {
                                 .setDescription(message.content)
                                 .setThumbnail(message.author.avatarURL);
                             await message.guild.channels.cache.get("779752686437400596").send(embed);
+                        }
+                    } catch {
+                        await message.channel.send("I do not have sufficient permissions to either send the confession, delete the inital message or log it. Please ensure i have this!!");
+                    }
+
+                    //Anon Advice
+                    try {
+                        if (message.channel.id === "814105814486876162") {
+                            await message.delete();
+                            var embed = new MessageEmbed()
+                                .setTitle("Anon asked...")
+                                .setDescription(message.content)
+                                .setColor(41034);
+                            await message.guild.channels.cache.get("814105905887969301").send(embed);
+                            await embed.setTitle("Advice")
+                                .addField("User", message.author.username, true)
+                                .addField("User ID", message.author.id, true)
+                                .addField("TimeStamp", message.createdAt, true)
+                                .setThumbnail(message.author.avatarURL);
+                            await message.guild.channels.cache.get("814106111371902996").send(embed);
                         }
                     } catch {
                         await message.channel.send("I do not have sufficient permissions to either send the confession, delete the inital message or log it. Please ensure i have this!!");

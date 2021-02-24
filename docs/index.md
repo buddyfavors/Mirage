@@ -155,6 +155,10 @@ Displays a list of credentials of those who helped make the server and bot possi
 
 Allows users to Confess and have it anonymised
 
+## Advice
+
+Got a question you want some advice about? Want advice on BDSM education? Ask it in the relevant channel and Mirage will anonymise it for you
+
 ## Flash-n-Dash
 
 Allows users to post a nude to the specified channel and have it autodelete after 60s
