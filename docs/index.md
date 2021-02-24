@@ -167,6 +167,10 @@ Allows users to post a nude to the specified channel and have it autodelete afte
 
 Adds reactions to suggestions and sends it to staff
 
+## +Poll "Title" "option 1" "option 2" ...
+
+Allows users to post a poll, similar to Yag. Only has support for up to 9 options. Please dont do more.
+
 ## +donate
 
 Lists the developer&#39;s donation links
