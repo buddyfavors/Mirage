@@ -1873,6 +1873,21 @@ try {
         });
     }
 
+    client.on('guildMemberRemove', async (member) =>{
+        if(await verification.count({
+            where:{
+                UserId: `${member.id}`
+            }
+        }) === 0) return;
+        else{
+            await verification.destroy({
+                where:{
+                    UserId: `${member.id}`
+                }
+            });
+        }
+    });
+
     //Member Add
     // client.on('guildMemberAdd', async function (member) {
     //     if (!UserData[member.id] && member.guild.id === "715701127181631527") {
