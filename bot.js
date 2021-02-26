@@ -274,7 +274,7 @@ try {
                             await message.delete();
                             var embed = new MessageEmbed()
                                 .setTitle("Play with me!")
-                                .setDescription(message.content)
+                                .setDescription(message.content.split(" ").slice(1).join(" "))
                                 .setColor(41034);
                             await message.channel.send(embed);
                         }
@@ -871,6 +871,20 @@ try {
                             await message.channel.send("You do not have any brat points. Or a Dom, sub or switch role! Lucky you! I'm sure we can change that though...")
                         }
                     }
+
+                    // //+bratboard
+                    // if(isValidCommand(message, "bratboard")){
+                    //     var embed = new MessageEmbed()
+                    //     .setTitle("Brat Board");
+                    //     var firstbratpoints = 0;
+                    //     var secondbratpoints = 0;
+                    //     var thirdbratpoints = 0;
+                    //     UserData.forEach(user => {
+                    //         if (user.bratPoints > firstbratpoints){
+
+                    //         }
+                    //     });
+                    // }
                 }
 
                 //Games
