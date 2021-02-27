@@ -292,20 +292,22 @@ try {
                             });
                     }
 
-                    //Suggestions - Updated channels to ID
-                    if (message.channel.id === "715711059356549196") {
-                        await message.react("✅");
-                        await message.react("❌");
+                    //+suggest <suggestion>
+                    if (isValidCommand(message, "suggest")) {
+                        await message.delete();
                         var embed = new MessageEmbed()
                             .setAuthor(message.author.username)
-                            .setDescription("New Suggestion...")
+                            .setTitle("New Suggestion...")
                             .setThumbnail(message.author.avatarURL({
                                 size: 64,
                                 dynamic: true
                             }))
-                            .addField("Suggestion", message.content);
+                            .setDescription(message.content.split(" ").slice(1).join(" "));
                         await client.guilds.cache.get("715651719698186262").channels.cache.get("723369211585626212").send(embed);
-                        await message.guild.channels.cache.get("809849380806721556").send(embed);
+                        await message.channel.send(embed).then(async msg =>{
+                            await msg.react("✅");
+                            await msg.react("❌");
+                        })
                     }
 
                     //+donate
