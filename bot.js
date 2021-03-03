@@ -253,26 +253,6 @@ try {
                         await message.channel.send(embed);
                     }
 
-                    //Anon Confessions
-                    try {
-                        if (message.channel.id === "779752684827705364") {
-                            await message.delete();
-                            var embed = new MessageEmbed()
-                                .setDescription(message.content)
-                                .setColor(41034);
-                            await message.guild.channels.cache.get("794261160617967646").send(embed);
-                            await embed.setTitle("Confession")
-                                .addField("User", message.author.username, true)
-                                .addField("User ID", message.author.id, true)
-                                .addField("TimeStamp", message.createdAt, true)
-                                .setDescription(message.content)
-                                .setThumbnail(message.author.avatarURL);
-                            await message.guild.channels.cache.get("809849380806721556").send(embed);
-                        }
-                    } catch {
-                        await message.channel.send("I do not have sufficient permissions to either send the confession, delete the inital message or log it. Please ensure i have this!!");
-                    }
-
                     //Anon Advice
                     if (message.channel.id === "814105814486876162") {
                         if (isValidCommand(message, "anon")) {
