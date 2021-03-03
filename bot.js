@@ -32,19 +32,15 @@ try {
     //Run initial setup when client is ready
     client.on('ready', async () => {
         //Connect to the Database for verifications
-        try {
-            //connect to db
-            await db.authenticate()
-                .then(async () => {
-                    await console.log("Connected to Database");
-                })
-                .catch((err) => console.log(err));
-            //initialise all database models.
-            await verification.init(db);
-            await verification.sync();
-        } catch (err) {
-            await console.log(err);
-        }
+        await db.authenticate()
+        .then(async () => {
+            await console.log("Connected to Database");
+        })
+        .catch((err) => await console.log(err));
+        
+        //initialise all database models.
+        await verification.init(db).catch((err) => await console.log(err));
+        await verification.sync().catch((err) => await console.log(err));
 
         //Log that bot is ready
         await console.log(`BOT: Ready at ${client.readyAt}`);
@@ -62,7 +58,7 @@ try {
             });
         }, 86400000);
 
-        //birthdays
+        //Birthdays
         {
             let rule = new schedule.RecurrenceRule();
             rule.dayOfWeek = [0, 1, 2, 3, 4, 5, 6];
@@ -126,7 +122,6 @@ try {
                 if (Object.keys(todaysbirths).length === 0) {
                     return;
                 } else {
-                    //UPDATE ID
                     client.channels.cache.get("715711014057934888").send(announce + "\n:cake:We here at Night visions wish them a happy birthday! :cake:");
                 }
             });
@@ -134,7 +129,7 @@ try {
 
         //NHIE
         {
-            let hour = [0, 6];
+            let hour = [0, 12];
 
             for (let i = 0; i < hour.length; i++) {
                 let rulenhie = new schedule.RecurrenceRule();
@@ -147,17 +142,17 @@ try {
                     var i = await Math.floor(Math.random() * games["NHIE"].questions.length - 1) + 1;
                     var qotd = games["NHIE"].questions[i];
                     await console.log("NHIE");
-                    // var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309547514757121");
+                    var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309547514757121");
                     var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
-                    // await client.channels.cache.get("716828911727804487").send("<@&811309547514757121>");
-                    // await client.channels.cache.get("716828911727804487").send(question);
+                    await client.channels.cache.get("716828911727804487").send("<@&811309547514757121>");
+                    await client.channels.cache.get("716828911727804487").send(question);
                 });
             }
         }
 
         //QOTD
         {
-            let hour = [0];
+            let hour = 0;
 
             for (let i = 0; i < hour.length; i++) {
                 let rulenhie = new schedule.RecurrenceRule();
@@ -170,10 +165,10 @@ try {
                     var i = await Math.floor(Math.random() * games["QOTD"].questions.length - 1) + 1;
                     var qotd = games["QOTD"].questions[i];
                     await console.log("QOTD");
-                    // var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309537331642378");
+                    var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309537331642378");
                     var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
-                    // await client.channels.cache.get("724777838619918459").send("<@&811309537331642378>");
-                    // await client.channels.cache.get("724777838619918459").send(question);
+                    await client.channels.cache.get("724777838619918459").send("<@&811309537331642378>");
+                    await client.channels.cache.get("724777838619918459").send(question);
                 });
             }
         }
