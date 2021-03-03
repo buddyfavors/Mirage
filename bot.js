@@ -208,7 +208,7 @@ try {
         //Confess anon
         if (message.channel.type === 'dm' && message.content.toLowerCase().startsWith("confess")) {
             var embed = new MessageEmbed().setDescription(message.content.split(" ").slice(1).join(" "));
-            await client.guilds.cache.get("794261160617967646").channels.cache.get("716825375187009546").send(embed);
+            await client.guilds.cache.get("715701127181631527").channels.cache.get("794261160617967646").send(embed);
             await embed.setTitle("Confession")
                 .addField("User", message.author.username, true)
                 .addField("User ID", message.author.id, true)
@@ -1814,11 +1814,11 @@ try {
                     }
                 }
 
-                //Porn Commands
+                //Misc Commands
                 {
-                    //+yiff
-                    if (isValidCommand(message, "yiff")) {
-
+                    //+bored
+                    if (isValidCommand(message, "bored")) {
+                        
                     }
                 }
             }
