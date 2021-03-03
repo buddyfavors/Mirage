@@ -1673,7 +1673,8 @@ try {
                                 type: args[1],
                                 name: args.slice(1).slice(1).join(" ")
                             }
-                        })
+                        });
+                        await message.react('<a:tick:794230124961988609>');
                     }
                 }
 
