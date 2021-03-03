@@ -37,7 +37,7 @@ try {
             await console.log("Connected to Database");
         })
         .catch((err) => await console.log(err));
-        
+
         //initialise all database models.
         await verification.init(db).catch((err) => await console.log(err));
         await verification.sync().catch((err) => await console.log(err));
@@ -187,6 +187,7 @@ try {
     //All Main commands
     client.on('message', async function (message) {
         if (message.author.bot) return;
+
         //Vent anon
         if (message.channel.type === 'dm' && message.content.toLowerCase().startsWith("vent")) {
             var embed = new MessageEmbed().setDescription(message.content.split(" ").slice(1).join(" "));
@@ -199,6 +200,19 @@ try {
             await client.guilds.cache.get("715701127181631527").channels.cache.get("809849380806721556").send(embed);
             return;
         }
+
+        //Confess anon
+        if (message.channel.type === 'dm' && message.content.toLowerCase().startsWith("vent")) {
+            var embed = new MessageEmbed().setDescription(message.content.split(" ").slice(1).join(" "));
+            await client.guilds.cache.get("794261160617967646").channels.cache.get("716825375187009546").send(embed);
+            await embed.setTitle("Confession")
+                .addField("User", message.author.username, true)
+                .addField("User ID", message.author.id, true)
+                .addField("Timestamp", message.createdAt, true);
+            await message.react('<a:tick:794230124961988609>');
+            await client.guilds.cache.get("715701127181631527").channels.cache.get("809849380806721556").send(embed);
+        }
+
         let AuthorRoleCache = await message.guild.members.cache.get(message.author.id).roles.cache;
         const isValidCommand = (message, cmdName) => message.content.toLowerCase().startsWith(prefix + cmdName);
 
