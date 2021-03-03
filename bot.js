@@ -144,15 +144,6 @@ try {
         }, (86400000));
 
         //NHIE
-        // await setTimeout(async function () {
-        //     var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-        //     var i = await Math.floor(Math.random() * games["NHIE"].questions.length-1) + 1;
-        //     var qotd = games["NHIE"].questions[i];
-        //     var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309547514757121");
-        //     var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
-        //     await client.channels.cache.get("716828911727804487").send("<@&811309547514757121>");
-        //     await client.channels.cache.get("716828911727804487").send(question);
-        // }, 10000);
         await setInterval(async function () {
             var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
             var i = await Math.floor(Math.random() * games["NHIE"].questions.length - 1) + 1;
@@ -1326,6 +1317,28 @@ try {
                         } else {
                             await message.channel.send("Your card got declined! Either the machine is broken or you are out of credits");
                         }
+                    }
+
+                    //+NHIE
+                    if(isValidCommand(message, "nhie") && message.channel.id === "715768048099000333"){
+                        await setTimeout(async function () {
+                            var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
+                            var i = await Math.floor(Math.random() * games["NHIE"].questions.length-1) + 1;
+                            var qotd = games["NHIE"].questions[i];
+                            var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
+                            await client.channels.cache.get("716828911727804487").send(question);
+                        }, 10000);
+                    }
+
+                    //+qotd
+                    if(isValidCommand(message, "qotd") && message.channel.id === "716828911727804487"){
+                        await setTimeout(async function () {
+                            var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
+                            var i = await Math.floor(Math.random() * games["QOTD"].questions.length-1) + 1;
+                            var qotd = games["QOTD"].questions[i];
+                            var question = new MessageEmbed().setTitle("Question of the Day").setDescription(qotd);
+                            await client.channels.cache.get("716828911727804487").send(question);
+                        }, 10000);
                     }
                 }
 
