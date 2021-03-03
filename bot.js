@@ -285,7 +285,7 @@ try {
                         await message.channel.send("I do not have sufficient permissions to either send the confession, delete the inital message or log it. Please ensure i have this!!");
                     }
 
-                    //Flash-n-dash - Updated Channels to ID
+                    //Flash-n-dash
                     if (message.channel.id === "756354194818203688") {
                         await message.delete({
                                 timeout: 60000
@@ -407,7 +407,7 @@ try {
 
                 }
 
-                //Currency - Updated Channel ID's
+                //Currency
                 {
                     //Random Bonus
                     if (MessageCount === randomBonus) {
@@ -521,7 +521,7 @@ try {
 
                 }
 
-                //Emotes - No updates needed
+                //Emotes
                 if (message.channel.id === "752267223007232020" && message.content.startsWith(`+`) && !message.content.startsWith("+help")) {
                     let args = message.content.split(' ').slice(1);
                     console.log(args[0]);
@@ -797,7 +797,7 @@ try {
                     }
                 }
 
-                //Memes - no updates needed
+                //Memes
                 {
                     //2+2=22
                     if (message.content.includes("2+2")) {
@@ -807,7 +807,7 @@ try {
 
                 //Brat Based Commands
                 {
-                    //+bratadd @user - Added error handling and a cooldown
+                    //+bratadd @user
                     if (isValidCommand(message, "bratadd") && UserData[message.author.id].bpgiven === 0) {
                         try {
                             var args = message.content.split(' ').slice(1);
@@ -1677,7 +1677,7 @@ try {
                     }
                 }
 
-                //Music - Changed channel names to ID's
+                //Music
                 if (message.channel.id === "71673214313010840636") {
                     const serverqueue = queue.get(message.guild.id);
                     try {
