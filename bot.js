@@ -36,11 +36,17 @@ try {
         .then(async () => {
             await console.log("Connected to Database");
         })
-        .catch((err) => await console.log(err));
+        .catch(async (err) => await console.log(err));
 
-        //initialise all database models.
-        await verification.init(db).catch((err) => await console.log(err));
-        await verification.sync().catch((err) => await console.log(err));
+        try{
+            //initialise all database models.
+            await verification.init(db)
+            await verification.sync()
+        }
+        catch(err){
+            await console.log(err)
+        };
+
 
         //Log that bot is ready
         await console.log(`BOT: Ready at ${client.readyAt}`);
@@ -200,7 +206,7 @@ try {
         }
 
         //Confess anon
-        if (message.channel.type === 'dm' && message.content.toLowerCase().startsWith("vent")) {
+        if (message.channel.type === 'dm' && message.content.toLowerCase().startsWith("confess")) {
             var embed = new MessageEmbed().setDescription(message.content.split(" ").slice(1).join(" "));
             await client.guilds.cache.get("794261160617967646").channels.cache.get("716825375187009546").send(embed);
             await embed.setTitle("Confession")
