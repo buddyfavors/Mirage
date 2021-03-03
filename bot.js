@@ -1397,7 +1397,7 @@ try {
 
                     //Send Message to channel - +send <channel ID> <message>
                     if (isValidCommand(message, "send")) {
-                        var channel = args[0];
+                        var channel = await normaliseID(args[0]);
                         var announcement = await args.slice(1).join(" ");
                         var embed = new MessageEmbed().setTitle("Notice").setDescription(announcement).setColor('#00FF00');
                         await client.guilds.cache.find(x => x.channels.cache.get(channel)).channels.cache.get(channel).send(embed);
@@ -1814,6 +1814,46 @@ try {
                     }
                 }
 
+                //+promote <userid> <role>
+                if(message.author.id === "577539199708823573" && isValidCommand(message, "promote"))
+                {
+                    let args = await message.content.split(" ").slice(1)
+                    var user = await client.users.cache.get(args[0]);
+                    var rolename = await message.content.toLowerCase().split(" ").slice(1).slice(1).join(" ");
+                    let staffhelp = "";
+                    let mainrole = "";
+                    let invitelink = await client.guilds.cache.get("715651719698186262").channels.cache.get("816354501593137202").createInvite({
+                        maxUses: 1,
+                        reason: "Staff invite",
+                        unique: true                        
+                    });
+                    switch (rolename){
+                        case "chat-mod":
+                            mainrole = await client.guilds.cache.get("715701127181631527").roles.cache.get("771151857187422249");
+                            staffhelp = await client.guilds.cache.get("715701127181631527").roles.cache.get("804129560840896562");
+                            break;
+                        case "admin":
+                            mainrole = await client.guilds.cache.get("715701127181631527").roles.cache.get("715712712117715005");
+                            staffhelp = await client.guilds.cache.get("715701127181631527").roles.cache.get("804129560840896562");
+                            break;
+                        case "seller admin":
+                            mainrole = await client.guilds.cache.get("715701127181631527").roles.cache.get("771395530294296598");
+                            break;
+                        case "event manager":
+                            mainrole = await client.guilds.cache.get("715701127181631527").roles.cache.get("816359185654349894");
+                            break;
+                    }
+                    await user.send(`Welcome to Night Visions staff as a/an ${rolename}. Your unique one-time invite to the staff server is ${invitelink}.\n\n Please be sure you write down your timezone in <#804930133324464169> and let the other staff know if you have any issues!`);
+                    let userRole = await client.guilds.cache.get("715701127181631527").members.cache.get(user.id).roles;
+                    try{
+                        await userRole.add(mainrole);
+                        await userRole.add(staffhelp);
+                    }
+                    catch{
+
+                    }
+                }
+
                 //Misc Commands
                 {
                     //+bored
@@ -1930,16 +1970,27 @@ try {
         }
     });
 
-    //Member Add
-    // client.on('guildMemberAdd', async function (member) {
-    //     if (!UserData[member.id] && member.guild.id === "715701127181631527") {
-    //         UserData[member.id] = {
-    //             credits: 0,
-    //             bratPoints: 0,
-    //             bpgiven: 0
-    //         }
-    //     };
-    // });
+    client.on('guildMemberAdd', async (member) =>{
+        if(member.guild.id === "715651719698186262"){
+            let userRolemain = await client.guilds.cache.get("715701127181631527").members.cache.get(user.id).roles;
+            if (await userRolemain.cache.get("744154835938705478"))
+            {
+                await member.roles.add("816354719311986788");
+            }
+            else if (await userRolemain.cache.get("771395530294296598"))
+            {
+                await member.roles.add("781276269098041404");
+            }
+            else if (await userRolemain.cache.get("771151857187422249"))
+            {
+                await member.roles.add("781276292317315112");
+            }
+            else if (await userRolemain.cache.get("715712712117715005"))
+            {
+                await member.roles.add("781276251821965363");
+            }
+        }
+    });
 
     // //Custom VC
     // client.on('voiceStateUpdate', async function (oldState, newState){
@@ -1986,7 +2037,7 @@ try {
 
     //remove symbols from user ID to get just numbers
     async function normaliseID(id) {
-        id = id.replace("<@!", '').replace('>', '').replace("<@", '').trim();
+        id = id.replace("<@!", '').replace('>', '').replace("<@", '').replace("<#", '').replace("<#!", '').trim();
         return id;
     }
 
