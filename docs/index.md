@@ -67,9 +67,18 @@ For 10 credits, the user can spin the slot reels and test their &quot;luck&quot;
 
 Every 12 hours, a random Never Have I Ever question will be sent to the specified channel
 
+## +qotd
+
+Manually send a NHIE (Pingless)
+
 ## Questions Of the Day
 
 Every 12 hours, a random question will be sent to the specified channel
+
+## +qotd
+
+Manually send a QOTD (Pingless)
+
 
 # Brat Commands
 
@@ -81,11 +90,13 @@ Allows Doms and switches to give Subs and Switches a &quot;brat point&quot; whic
 
 Display the authors current brat points.
 
+
 # Memes
 
 ## 2+2
 
 Mirage Can teach you maths! Any message with 2+2 in it will teach you basic maths!
+
 
 # Emotes
 
@@ -140,6 +151,7 @@ Sends an emote that Fucks the mentioned user
 ## +anal \<@user\>
 
 Sends an emote that Fucks the mentioned user in the ass
+
 
 # Utilities
 
