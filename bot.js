@@ -8,6 +8,7 @@ try {
     const client = new Client();
     const wait = require('util').promisify(setTimeout);
     const fs = require('fs');
+    const schedule = require('node-schedule');
 
     //Database Import
     const db = require('./database/database');
@@ -61,98 +62,121 @@ try {
             });
         }, 86400000);
 
-        //announce birthdays
-        setInterval(async function () {
-            birthdaysData = await JSON.parse(fs.readFileSync('storage/birthdays.json', 'utf8'));
-            var members = Object.keys(birthdaysData);
-            var todaysbirths = {};
-            var length = Object.keys(birthdaysData).length;
-            var todayDD = Date().toString().split(" ").slice(2, 3).join(" ");
-            var todayMM = Date().toString().split(" ").slice(1, 2).join(" ");
-            switch (todayMM) {
-                case "Jan":
-                    todayMM = "01";
-                    break;
-                case "Feb":
-                    todayMM = "02";
-                    break;
-                case "Mar":
-                    todayMM = "03";
-                    break;
-                case "Apr":
-                    todayMM = "04";
-                    break;
-                case "May":
-                    todayMM = "05";
-                    break;
-                case "Jun":
-                    todayMM = "06";
-                    break;
-                case "Jul":
-                    todayMM = "07";
-                    break;
-                case "Aug":
-                    todayMM = "08";
-                    break;
-                case "Sep":
-                    todayMM = "09";
-                    break;
-                case "Oct":
-                    todayMM = "10";
-                    break;
-                case "Nov":
-                    todayMM = "11";
-                    break;
-                case "Dec":
-                    todayMM = "12";
-                    break;
-            }
-            var i = 0
-            var announce = ":tada:Todays Birthdays are:\n\n";
-            await members.forEach(member => {
-                if (birthdaysData[member.replace("\"", "")].birthdate === `${todayDD}/${todayMM}`) {
-                    todaysbirths[i] = member;
-                    i++
-                    announce = announce + `${client.users.cache.get(member.replace("\"", ""))}\n`;
+        //birthdays
+        {
+            let rule = new schedule.RecurrenceRule();
+            rule.dayOfWeek = [0, 1, 2, 3, 4, 5, 6];
+            rule.hour = 0;
+            rule.minute = 0;
+
+            let birthdays = await schedule.scheduleJob(rule, async function () {
+                birthdaysData = await JSON.parse(fs.readFileSync('storage/birthdays.json', 'utf8'));
+                var members = Object.keys(birthdaysData);
+                var todaysbirths = {};
+                var length = Object.keys(birthdaysData).length;
+                var todayDD = Date().toString().split(" ").slice(2, 3).join(" ");
+                var todayMM = Date().toString().split(" ").slice(1, 2).join(" ");
+                switch (todayMM) {
+                    case "Jan":
+                        todayMM = "01";
+                        break;
+                    case "Feb":
+                        todayMM = "02";
+                        break;
+                    case "Mar":
+                        todayMM = "03";
+                        break;
+                    case "Apr":
+                        todayMM = "04";
+                        break;
+                    case "May":
+                        todayMM = "05";
+                        break;
+                    case "Jun":
+                        todayMM = "06";
+                        break;
+                    case "Jul":
+                        todayMM = "07";
+                        break;
+                    case "Aug":
+                        todayMM = "08";
+                        break;
+                    case "Sep":
+                        todayMM = "09";
+                        break;
+                    case "Oct":
+                        todayMM = "10";
+                        break;
+                    case "Nov":
+                        todayMM = "11";
+                        break;
+                    case "Dec":
+                        todayMM = "12";
+                        break;
+                }
+                var i = 0
+                var announce = ":tada:Todays Birthdays are:\n\n";
+                await members.forEach(member => {
+                    if (birthdaysData[member.replace("\"", "")].birthdate === `${todayDD}/${todayMM}`) {
+                        todaysbirths[i] = member;
+                        i++
+                        announce = announce + `${client.users.cache.get(member.replace("\"", ""))}\n`;
+                    }
+                });
+                if (Object.keys(todaysbirths).length === 0) {
+                    return;
+                } else {
+                    //UPDATE ID
+                    client.channels.cache.get("715711014057934888").send(announce + "\n:cake:We here at Night visions wish them a happy birthday! :cake:");
                 }
             });
-            if (Object.keys(todaysbirths).length === 0) {
-                return;
-            } else {
-                client.channels.cache.get(guilddata["768896221556506724"].lounge).send(announce + "\n:cake:We here at purgatory wish them a happy birthday! :cake:");
-            }
-        }, 86400000);
-
-        //QOTD
-        // await setTimeout(async function () {
-        //     var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-        //     var i = await Math.floor(Math.random() * games["QOTD"].questions.length - 1) + 1;
-        //     var qotd = games["QOTD"].questions[i];
-        //     var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309537331642378");
-        //     var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
-        //     await client.channels.cache.get("724777838619918459").send("<@&811309537331642378>");
-        //     await client.channels.cache.get("724777838619918459").send(question);
-        // }, 10000);
-        await setInterval(async function () {
-            var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-            var i = await Math.floor(Math.random() * games["QOTD"].questions.length-1) + 1;
-            var qotd = games["QOTD"].questions[i];
-            var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309537331642378");
-            var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
-            await client.channels.cache.get("724777838619918459").send("<@&811309537331642378>");
-            await client.channels.cache.get("724777838619918459").send(question);
-        }, (86400000));
+        }
 
         //NHIE
-        await setInterval(async function () {
-            var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-            var i = await Math.floor(Math.random() * games["NHIE"].questions.length - 1) + 1;
-            var qotd = games["NHIE"].questions[i];
-            var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309547514757121");
-            var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
-            await client.channels.cache.get("716828911727804487").send("<@&811309547514757121>");
-            await client.channels.cache.get("716828911727804487").send(question);
-        }, (43200000));
+        {
+            let hour = [0, 6];
+
+            for (let i = 0; i < hour.length; i++) {
+                let rulenhie = new schedule.RecurrenceRule();
+                rulenhie.dayOfWeek = [0, 1, 2, 3, 4, 5, 6];
+                rulenhie.hour = hour[i];
+                rulenhie.minute = 0;
+
+                let j = await schedule.scheduleJob(rulenhie, async function () {
+                    var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
+                    var i = await Math.floor(Math.random() * games["NHIE"].questions.length - 1) + 1;
+                    var qotd = games["NHIE"].questions[i];
+                    await console.log("NHIE");
+                    // var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309547514757121");
+                    var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
+                    // await client.channels.cache.get("716828911727804487").send("<@&811309547514757121>");
+                    // await client.channels.cache.get("716828911727804487").send(question);
+                });
+            }
+        }
+
+        //QOTD
+        {
+            let hour = [0];
+
+            for (let i = 0; i < hour.length; i++) {
+                let rulenhie = new schedule.RecurrenceRule();
+                rulenhie.dayOfWeek = [0, 1, 2, 3, 4, 5, 6];
+                rulenhie.hour = hour[i];
+                rulenhie.minute = 0;
+
+                let j = await schedule.scheduleJob(rulenhie, async function () {
+                    var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
+                    var i = await Math.floor(Math.random() * games["QOTD"].questions.length - 1) + 1;
+                    var qotd = games["QOTD"].questions[i];
+                    await console.log("QOTD");
+                    // var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309537331642378");
+                    var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
+                    // await client.channels.cache.get("724777838619918459").send("<@&811309537331642378>");
+                    // await client.channels.cache.get("724777838619918459").send(question);
+                });
+            }
+        }
     });
 
     //Error Handling
@@ -241,9 +265,8 @@ try {
                     }
 
                     //Anon Advice
-                        if (message.channel.id === "814105814486876162")
-                        {
-                            if(isValidCommand(message, "anon")) {
+                    if (message.channel.id === "814105814486876162") {
+                        if (isValidCommand(message, "anon")) {
                             await message.delete();
                             var embed = new MessageEmbed()
                                 .setTitle("Anon asked...")
@@ -295,7 +318,7 @@ try {
                             }))
                             .setDescription(message.content.split(" ").slice(1).join(" "));
                         await client.guilds.cache.get("715651719698186262").channels.cache.get("723369211585626212").send(embed);
-                        await message.channel.send(embed).then(async msg =>{
+                        await message.channel.send(embed).then(async msg => {
                             await msg.react("✅");
                             await msg.react("❌");
                         })
@@ -311,19 +334,19 @@ try {
                     }
 
                     //+poll <topic> <opt 1> <opt 2> [additional up to 9]
-                    try{
-                        if(isValidCommand(message, "poll")){
+                    try {
+                        if (isValidCommand(message, "poll")) {
                             var args = message.content.split(' "').slice(1);
                             var topic = args[0];
                             var options = args.slice(0);
                             console.log(options);
                             var embed = new MessageEmbed()
-                            .setTitle(topic.substring(0, topic.length - 1))
-                            .setFooter(`Asked by: ${message.author.username}`)
-                            .setDescription("");
+                                .setTitle(topic.substring(0, topic.length - 1))
+                                .setFooter(`Asked by: ${message.author.username}`)
+                                .setDescription("");
                             await message.delete();
-                            for(var iCount = 1; iCount < options.length; iCount++){
-                                switch(iCount){
+                            for (var iCount = 1; iCount < options.length; iCount++) {
+                                switch (iCount) {
                                     case 1:
                                         await embed.setDescription(`${embed.description}\n1️⃣`)
                                         break;
@@ -354,9 +377,9 @@ try {
                                 }
                                 await embed.setDescription(`${embed.description} ${options[iCount].substring(0, options[iCount].length - 1)}`);
                             };
-                            await message.channel.send(embed).then(async msg =>{
-                                for(var iCount = 1; iCount < options.length; iCount++){
-                                    switch(iCount){
+                            await message.channel.send(embed).then(async msg => {
+                                for (var iCount = 1; iCount < options.length; iCount++) {
+                                    switch (iCount) {
                                         case 1:
                                             await msg.react(`1️⃣`)
                                             break;
@@ -385,11 +408,10 @@ try {
                                             await msg.react(`9️⃣`);
                                             break;
                                     }
-                                }    
+                                }
                             });
                         }
-                    }
-                    catch{
+                    } catch {
                         message.channel.send("An error occured whilst creating the poll. Please ensure you use the format of ```+poll \"Title for poll\" \"Option 1\" \"Option 2\"...```")
                     }
 
@@ -1320,10 +1342,10 @@ try {
                     }
 
                     //+NHIE
-                    if(isValidCommand(message, "nhie") && message.channel.id === "715768048099000333"){
+                    if (isValidCommand(message, "nhie") && message.channel.id === "715768048099000333") {
                         await setTimeout(async function () {
                             var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-                            var i = await Math.floor(Math.random() * games["NHIE"].questions.length-1) + 1;
+                            var i = await Math.floor(Math.random() * games["NHIE"].questions.length - 1) + 1;
                             var qotd = games["NHIE"].questions[i];
                             var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
                             await client.channels.cache.get("716828911727804487").send(question);
@@ -1331,10 +1353,10 @@ try {
                     }
 
                     //+qotd
-                    if(isValidCommand(message, "qotd") && message.channel.id === "716828911727804487"){
+                    if (isValidCommand(message, "qotd") && message.channel.id === "716828911727804487") {
                         await setTimeout(async function () {
                             var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-                            var i = await Math.floor(Math.random() * games["QOTD"].questions.length-1) + 1;
+                            var i = await Math.floor(Math.random() * games["QOTD"].questions.length - 1) + 1;
                             var qotd = games["QOTD"].questions[i];
                             var question = new MessageEmbed().setTitle("Question of the Day").setDescription(qotd);
                             await client.channels.cache.get("716828911727804487").send(question);
@@ -1655,7 +1677,7 @@ try {
                     }
 
                     //+setStatus
-                    if (isValidCommand(message, "setstatus")){
+                    if (isValidCommand(message, "setstatus")) {
                         client.user.setPresence({
                             status: args[0],
                             activity: {
@@ -1902,15 +1924,15 @@ try {
         });
     }
 
-    client.on('guildMemberRemove', async (member) =>{
-        if(await verification.count({
-            where:{
-                UserId: `${member.id}`
-            }
-        }) === 0) return;
-        else{
+    client.on('guildMemberRemove', async (member) => {
+        if (await verification.count({
+                where: {
+                    UserId: `${member.id}`
+                }
+            }) === 0) return;
+        else {
             await verification.destroy({
-                where:{
+                where: {
                     UserId: `${member.id}`
                 }
             });
