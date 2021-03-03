@@ -141,7 +141,6 @@ try {
                     var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
                     var i = await Math.floor(Math.random() * games["NHIE"].questions.length - 1) + 1;
                     var qotd = games["NHIE"].questions[i];
-                    await console.log("NHIE");
                     var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309547514757121");
                     var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
                     await client.channels.cache.get("716828911727804487").send("<@&811309547514757121>");
@@ -164,7 +163,6 @@ try {
                     var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
                     var i = await Math.floor(Math.random() * games["QOTD"].questions.length - 1) + 1;
                     var qotd = games["QOTD"].questions[i];
-                    await console.log("QOTD");
                     var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309537331642378");
                     var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
                     await client.channels.cache.get("724777838619918459").send("<@&811309537331642378>");
@@ -328,7 +326,6 @@ try {
                             var args = message.content.split(' "').slice(1);
                             var topic = args[0];
                             var options = args.slice(0);
-                            console.log(options);
                             var embed = new MessageEmbed()
                                 .setTitle(topic.substring(0, topic.length - 1))
                                 .setFooter(`Asked by: ${message.author.username}`)
@@ -524,7 +521,6 @@ try {
                 //Emotes
                 if (message.channel.id === "752267223007232020" && message.content.startsWith(`+`) && !message.content.startsWith("+help")) {
                     let args = message.content.split(' ').slice(1);
-                    console.log(args[0]);
                     var random;
                     var member;
                     //If no mention of user
@@ -1639,7 +1635,6 @@ try {
                         //Webhook
                         const guild = client.guilds.cache.get(message.guild.id);
                         const webhooks = await guild.fetchWebhooks();
-                        await console.log(webhooks);
                         const webhook = webhooks.get("794203657029025802");
                         var announcement = message.content.substring(9).trimStart();
                         await webhook.send(announcement, {
