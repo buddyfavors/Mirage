@@ -65,85 +65,82 @@ try {
         }, 86400000);
 
         //Birthdays
-        {
-            let rule = new schedule.RecurrenceRule();
-            rule.dayOfWeek = [0, 1, 2, 3, 4, 5, 6];
-            rule.hour = 0;
-            rule.minute = 0;
+        let rule = new schedule.RecurrenceRule();
+        rule.dayOfWeek = [0, 1, 2, 3, 4, 5, 6];
+        rule.hour = 0;
+        rule.minute = 0;
 
-            let birthdays = await schedule.scheduleJob(rule, async function () {
-                birthdaysData = await JSON.parse(fs.readFileSync('storage/birthdays.json', 'utf8'));
-                var members = Object.keys(birthdaysData);
-                var todaysbirths = {};
-                var length = Object.keys(birthdaysData).length;
-                var todayDD = Date().toString().split(" ").slice(2, 3).join(" ");
-                var todayMM = Date().toString().split(" ").slice(1, 2).join(" ");
-                switch (todayMM) {
-                    case "Jan":
-                        todayMM = "01";
-                        break;
-                    case "Feb":
-                        todayMM = "02";
-                        break;
-                    case "Mar":
-                        todayMM = "03";
-                        break;
-                    case "Apr":
-                        todayMM = "04";
-                        break;
-                    case "May":
-                        todayMM = "05";
-                        break;
-                    case "Jun":
-                        todayMM = "06";
-                        break;
-                    case "Jul":
-                        todayMM = "07";
-                        break;
-                    case "Aug":
-                        todayMM = "08";
-                        break;
-                    case "Sep":
-                        todayMM = "09";
-                        break;
-                    case "Oct":
-                        todayMM = "10";
-                        break;
-                    case "Nov":
-                        todayMM = "11";
-                        break;
-                    case "Dec":
-                        todayMM = "12";
-                        break;
-                }
-                var i = 0
-                var announce = ":tada:Todays Birthdays are:\n\n";
-                await members.forEach(member => {
-                    if (birthdaysData[member.replace("\"", "")].birthdate === `${todayDD}/${todayMM}`) {
-                        todaysbirths[i] = member;
-                        i++
-                        announce = announce + `${client.users.cache.get(member.replace("\"", ""))}\n`;
-                    }
-                });
-                if (Object.keys(todaysbirths).length === 0) {
-                    return;
-                } else {
-                    client.channels.cache.get("715711014057934888").send(announce + "\n:cake:We here at Night visions wish them a happy birthday! :cake:");
+        let birthdays = await schedule.scheduleJob(rule, async function () {
+            birthdaysData = await JSON.parse(fs.readFileSync('storage/birthdays.json', 'utf8'));
+            var members = Object.keys(birthdaysData);
+            var todaysbirths = {};
+            var length = Object.keys(birthdaysData).length;
+            var todayDD = Date().toString().split(" ").slice(2, 3).join(" ");
+            var todayMM = Date().toString().split(" ").slice(1, 2).join(" ");
+            switch (todayMM) {
+                case "Jan":
+                    todayMM = "1";
+                    break;
+                case "Feb":
+                    todayMM = "2";
+                    break;
+                case "Mar":
+                    todayMM = "3";
+                    break;
+                case "Apr":
+                    todayMM = "4";
+                    break;
+                case "May":
+                    todayMM = "5";
+                    break;
+                case "Jun":
+                    todayMM = "6";
+                    break;
+                case "Jul":
+                    todayMM = "7";
+                    break;
+                case "Aug":
+                    todayMM = "8";
+                    break;
+                case "Sep":
+                    todayMM = "9";
+                    break;
+                case "Oct":
+                    todayMM = "10";
+                    break;
+                case "Nov":
+                    todayMM = "11";
+                    break;
+                case "Dec":
+                    todayMM = "12";
+                    break;
+            }
+            var i = 0
+            var announce = ":tada:Todays Birthdays are:\n\n";
+            await members.forEach(member => {
+                if ((birthdaysData[member.replace("\"", "")].birthdate === `${todayDD}/${todayMM}`) || (birthdaysData[member.replace("\"", "")].birthdate === `0${todayDD}/0${todayMM}`)|| (birthdaysData[member.replace("\"", "")].birthdate === `${todayDD}/0${todayMM}`)|| (birthdaysData[member.replace("\"", "")].birthdate === `0${todayDD}/${todayMM}`)) {
+                    todaysbirths[i] = member;
+                    i++
+                    announce = announce + `${client.users.cache.get(member.replace("\"", ""))}\n`;
                 }
             });
-        }
+            if (Object.keys(todaysbirths).length === 0) {
+                return;
+            } else {
+                client.channels.cache.get("715711014057934888").send(announce + "\n:cake:We here at Night visions wish them a happy birthday! :cake:");
+            }
+        });
 
         //NHIE
         {
             let hour = [0, 12];
-
             for (let i = 0; i < hour.length; i++) {
                 let rulenhie = new schedule.RecurrenceRule();
                 rulenhie.dayOfWeek = [0, 1, 2, 3, 4, 5, 6];
                 rulenhie.hour = hour[i];
                 rulenhie.minute = 0;
 
-                let j = await schedule.scheduleJob(rulenhie, async function () {
+                let NHIE = await schedule.scheduleJob(rulenhie, async function () {
                     var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
                     var i = await Math.floor(Math.random() * games["NHIE"].questions.length - 1) + 1;
                     var qotd = games["NHIE"].questions[i];
@@ -157,24 +154,19 @@ try {
 
         //QOTD
         {
-            let hour = 0;
-
-            for (let i = 0; i < hour.length; i++) {
                 let rulenhie = new schedule.RecurrenceRule();
                 rulenhie.dayOfWeek = [0, 1, 2, 3, 4, 5, 6];
-                rulenhie.hour = hour[i];
+                rulenhie.hour = 0;
                 rulenhie.minute = 0;
 
-                let j = await schedule.scheduleJob(rulenhie, async function () {
+                let QOTD = await schedule.scheduleJob(rulenhie, async function () {
                     var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
                     var i = await Math.floor(Math.random() * games["QOTD"].questions.length - 1) + 1;
                     var qotd = games["QOTD"].questions[i];
-                    var role = await client.guilds.cache.get("715701127181631527").roles.cache.get("811309537331642378");
                     var question = new MessageEmbed().setTitle("Question of The Day").setDescription(qotd);
                     await client.channels.cache.get("724777838619918459").send("<@&811309537331642378>");
                     await client.channels.cache.get("724777838619918459").send(question);
                 });
-            }
         }
     });
 
@@ -287,16 +279,6 @@ try {
                         }
                     } catch {
                         await message.channel.send("I do not have sufficient permissions to either send the confession, delete the inital message or log it. Please ensure i have this!!");
-                    }
-
-                    //Flash-n-dash
-                    if (message.channel.id === "756354194818203688") {
-                        await message.delete({
-                                timeout: 60000
-                            })
-                            .catch(async error => {
-                                await console.log("Error: Message Not available to delete!")
-                            });
                     }
 
                     //+suggest <suggestion>
@@ -1333,25 +1315,21 @@ try {
                     }
 
                     //+NHIE
-                    if (isValidCommand(message, "nhie") && message.channel.id === "715768048099000333") {
-                        await setTimeout(async function () {
-                            var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-                            var i = await Math.floor(Math.random() * games["NHIE"].questions.length - 1) + 1;
-                            var qotd = games["NHIE"].questions[i];
-                            var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
-                            await client.channels.cache.get("716828911727804487").send(question);
-                        }, 10000);
+                    if (isValidCommand(message, "nhie") && message.channel.id === "716828911727804487") {
+                        var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
+                        var i = await Math.floor(Math.random() * games["NHIE"].questions.length - 1) + 1;
+                        var qotd = games["NHIE"].questions[i];
+                        var question = new MessageEmbed().setTitle("Never Have I ever").setDescription(qotd);
+                        await client.channels.cache.get("716828911727804487").send(question);
                     }
 
                     //+qotd
-                    if (isValidCommand(message, "qotd") && message.channel.id === "716828911727804487") {
-                        await setTimeout(async function () {
-                            var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-                            var i = await Math.floor(Math.random() * games["QOTD"].questions.length - 1) + 1;
-                            var qotd = games["QOTD"].questions[i];
-                            var question = new MessageEmbed().setTitle("Question of the Day").setDescription(qotd);
-                            await client.channels.cache.get("716828911727804487").send(question);
-                        }, 10000);
+                    if (isValidCommand(message, "qotd") && message.channel.id === "724777838619918459") {
+                        var games = await JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
+                        var i = await Math.floor(Math.random() * games["QOTD"].questions.length - 1) + 1;
+                        var qotd = games["QOTD"].questions[i];
+                        var question = new MessageEmbed().setTitle("Question of the Day").setDescription(qotd);
+                        await client.channels.cache.get("724777838619918459").send(question);
                     }
                 }
 
