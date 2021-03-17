@@ -1862,7 +1862,6 @@ client.on('message', async function (message) {
                 if (isValidCommand(message, "bored")) {
                     const {
                         activity,
-                        price,
                         type
                     } = await fetch('https://www.boredapi.com/api/activity').then(response => response.json());
                     await message.channel.send(`A ${type} activity you can do is ${activity}`);
