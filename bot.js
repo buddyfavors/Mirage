@@ -3,15 +3,17 @@ require("dotenv").config();
 const {
     Client,
     MessageEmbed,
+    Util
 } = require('discord.js');
 const client = new Client();
 const wait = require('util').promisify(setTimeout);
 const fs = require('fs');
 const schedule = require('node-schedule');
 const ytdl = require('ytdl-core');
-const ytSearch = require('yt-search');
 const queue = new Map();
 const fetch = require('node-fetch');
+const yts = require("yt-search");
+
 
 //Database Import
 const db = require('./database/database');
@@ -1370,6 +1372,43 @@ client.on('message', async function (message) {
             if (await AuthorRoleCache.get("804129560840896562") || message.author.id === "577539199708823573") {
                 let args = message.content.split(' ').slice(1);
 
+                //+promote <userid> <role>
+                if (message.author.id === "577539199708823573" && isValidCommand(message, "promote")) {
+                    let args = await message.content.split(" ").slice(1)
+                    var user = await client.users.cache.get(args[0]);
+                    var rolename = await message.content.toLowerCase().split(" ").slice(1).slice(1).join(" ");
+                    let staffhelp = "";
+                    let mainrole = "";
+                    let invitelink = await client.guilds.cache.get("715651719698186262").channels.cache.get("816354501593137202").createInvite({
+                        maxUses: 1,
+                        reason: "Staff invite",
+                        unique: true
+                    });
+                    switch (rolename) {
+                        case "chat-mod":
+                            mainrole = await client.guilds.cache.get("715701127181631527").roles.cache.get("771151857187422249");
+                            staffhelp = await client.guilds.cache.get("715701127181631527").roles.cache.get("804129560840896562");
+                            break;
+                        case "admin":
+                            mainrole = await client.guilds.cache.get("715701127181631527").roles.cache.get("715712712117715005");
+                            staffhelp = await client.guilds.cache.get("715701127181631527").roles.cache.get("804129560840896562");
+                            break;
+                        case "seller admin":
+                            mainrole = await client.guilds.cache.get("715701127181631527").roles.cache.get("771395530294296598");
+                            break;
+                        case "event manager":
+                            mainrole = await client.guilds.cache.get("715701127181631527").roles.cache.get("816359185654349894");
+                            break;
+                    }
+                    await user.send(`Welcome to Night Visions staff as a/an ${rolename}. Your unique one-time invite to the staff server is ${invitelink}.\n\n Please be sure you write down your timezone in <#804930133324464169> and let the other staff know if you have any issues!`);
+                    let userRole = await client.guilds.cache.get("715701127181631527").members.cache.get(user.id).roles;
+                    try {
+                        await userRole.add(mainrole);
+                        await userRole.add(staffhelp);
+                    } catch {
+
+                    }
+                }
                 //View stats about the bot - +status
                 if (isValidCommand(message, "status")) {
                     await message.channel.send(`Uptime: ${(Math.floor(process.uptime())/60).toString()} Minutes\nMemory Usage: ${process.memoryUsage().toString()}`);
@@ -1661,23 +1700,129 @@ client.on('message', async function (message) {
 
             //Music
             {
-                if(isValidCommand(message, "play")){
-                    const voice_channel = message.member.voice.channel;
-                    if(!voice_channel) return await message.channel.send('You need to be in a VC for this to work!');
+                const serverQueue = queue.get(message.guild.id);
+                if (isValidCommand(message, "play")) {
+                    //Set variables needed for music to function
+                    const voice_channel = message.guild.members.cache.get(message.author.id).voice.channel;
+                    if (!voice_channel) return await message.channel.send('You need to be in a VC for this to work!');
                     const permissions = voice_channel.permissionsFor(message.client.user);
-                    if(!permissions.has('CONNECT')) return await message.channel.send("I dont have sufficient permissions to connect");
-                    if(!permissions.has('SPEAK')) return await message.channel.send("I dont have sufficient permissions to speak");
-
-                    const server_queue = await queue.get(message.guild.id);
-
-                    if(await message.content.split(" ").slice(1).join(" ").length === 0) return await message.channel.send("```No arguments passed```");
-                    let song = {};
-
-                    if(ytdl.validateURL(await message.content.split(" ").slice(1).join(" ")))
-                    {
-                        const song_info = await ytdl.getInfo(await message.content.split(" ").slice(1).join(" "));
-                        
+                    if (!permissions.has('CONNECT')) return await message.channel.send("I dont have sufficient permissions to connect");
+                    if (!permissions.has('SPEAK')) return await message.channel.send("I dont have sufficient permissions to speak");
+                    if (await message.content.split(" ").slice(1).join(" ").length === 0) return await message.channel.send("```No arguments passed```");
+                    var args = await message.content.split(" ").slice(1).join(" ");
+                    if (args.startsWith("https://www.youtube.com")) {
+                        const songInfo = await (await ytdl.getBasicInfo(args)).videoDetails;
+                        const song = {
+                            id: songInfo.videoId,
+                            title: songInfo.title,
+                            url: args
+                        }
+                        if (!serverQueue) {
+                            const queueConstruct = {
+                                textChannel: message.channel,
+                                voiceChannel: voice_channel,
+                                connection: null,
+                                songs: [],
+                                volume: 5,
+                                playing: true
+                            }
+                            queue.set(message.guild.id, queueConstruct);
+                            queueConstruct.songs.push(song);
+                            const connection = await voice_channel.join();
+                            queueConstruct.connection = connection;
+                            play(message.guild, queueConstruct.songs[0]);
+                        } else {
+                            serverQueue.songs.push(song);
+                            return await message.channel.send(`**${song.title}** has been added to the queue`)
+                        }
+                        return undefined;
                     }
+                    else{
+                        const r = await yts(args);
+                        const v = r.videos.slice(0, 1)
+                        const song = {
+                            id: v[0].videoId,
+                            title: v[0].title,
+                            url: `https://www.youtube.com/watch?v=${v[0].videoId}`
+                        }
+                        const songInfo = await (await ytdl.getInfo(song.url)).videoDetails;
+                        if (!serverQueue) {
+                            const queueConstruct = {
+                                textChannel: message.channel,
+                                voiceChannel: voice_channel,
+                                connection: null,
+                                songs: [],
+                                volume: 5,
+                                playing: true
+                            }
+                            queue.set(message.guild.id, queueConstruct);
+                            queueConstruct.songs.push(song);
+                            const connection = await voice_channel.join();
+                            queueConstruct.connection = connection;
+                            play(message.guild, queueConstruct.songs[0]);
+                        } else {
+                            serverQueue.songs.push(song);
+                            return await message.channel.send(`**${song.title}** has been added to the queue`)
+                        }
+                        return undefined;
+                    }
+                }
+                if (isValidCommand(message, "stop")) {
+                    if (!message.member.voice.channel) return await message.channel.send("You need to be in a VC to do that.");
+                    if (!serverQueue) return await message.channel.send("There is nothing playing!");
+                    serverQueue.songs = [];
+                    serverQueue.connection.dispatcher.end();
+                    await message.react('👋');
+                }
+                if (isValidCommand(message, "skip")) {
+                    if (!message.member.voice.channel) return await message.channel.send("You need to be in a VC to do that.");
+                    if (!serverQueue) return await message.channel.send("There is nothing playing!");
+                    serverQueue.songs.shift();
+                    serverQueue.connection.dispatcher.end();
+                    play(message.guild, serverQueue.songs[0])
+                    await message.react('⏭️');
+                }
+                if (isValidCommand(message, "volume")) {
+                    var args = await message.content.split(" ").slice(1).join(" ")
+                    if (!message.member.voice.channel) return await message.channel.send("You need to be in a VC to do that.");
+                    if (!serverQueue) return await message.channel.send("There is nothing playing!");
+                    if (!args) return await message.channel.send(`The Current Volume is **${serverQueue.volume}**`);
+                    if (isNaN(args)) return await message.channel.send("Invalid volume, please enter a number");
+                    serverQueue.volume = args;
+                    await serverQueue.connection.dispatcher.setVolumeLogarithmic(args / 5);
+                    await message.react('🔈');
+                }
+                if (isValidCommand(message, "np")) {
+                    var args = await message.content.split(" ").slice(1).join(" ")
+                    if (!message.member.voice.channel) return await message.channel.send("You need to be in a VC to do that.");
+                    if (!serverQueue) return await message.channel.send("There is nothing playing!");
+                    await message.channel.send(`Now Playing: **${serverQueue.songs[0].title}**`)
+                }
+                if (isValidCommand(message, "queue")) {
+                    var args = await message.content.split(" ").slice(1).join(" ")
+                    if (!message.member.voice.channel) return await message.channel.send("You need to be in a VC to do that.");
+                    if (!serverQueue) return await message.channel.send("There is nothing playing!");
+                    await message.channel.send(`**__Queue__**${serverQueue.songs.map(song => `**-** ${song.title}\n`)}Now Playing: **${serverQueue.songs[0].title}**`, {
+                        split: true
+                    })
+                }
+                if (isValidCommand(message, "pause")) {
+                    var args = await message.content.split(" ").slice(1).join(" ")
+                    if (!message.member.voice.channel) return await message.channel.send("You need to be in a VC to do that.");
+                    if (!serverQueue) return await message.channel.send("There is nothing playing!");
+                    if (!serverQueue.playing) return await message.channel.send("Music is already paused!");
+                    serverQueue.playing = false;
+                    await serverQueue.connection.dispatcher.pause();
+                    await message.react('⏯️')
+                }
+                if (isValidCommand(message, "resume")) {
+                    var args = await message.content.split(" ").slice(1).join(" ")
+                    if (!message.member.voice.channel) return await message.channel.send("You need to be in a VC to do that.");
+                    if (!serverQueue) return await message.channel.send("There is nothing playing!");
+                    if (serverQueue.playing) return await message.channel.send("Music is already playing!");
+                    serverQueue.playing = resume;
+                    await serverQueue.connection.dispatcher.resume();
+                    await message.react('⏯️')
                 }
             }
 
@@ -1711,49 +1856,15 @@ client.on('message', async function (message) {
                 }
             }
 
-            //+promote <userid> <role>
-            if (message.author.id === "577539199708823573" && isValidCommand(message, "promote")) {
-                let args = await message.content.split(" ").slice(1)
-                var user = await client.users.cache.get(args[0]);
-                var rolename = await message.content.toLowerCase().split(" ").slice(1).slice(1).join(" ");
-                let staffhelp = "";
-                let mainrole = "";
-                let invitelink = await client.guilds.cache.get("715651719698186262").channels.cache.get("816354501593137202").createInvite({
-                    maxUses: 1,
-                    reason: "Staff invite",
-                    unique: true
-                });
-                switch (rolename) {
-                    case "chat-mod":
-                        mainrole = await client.guilds.cache.get("715701127181631527").roles.cache.get("771151857187422249");
-                        staffhelp = await client.guilds.cache.get("715701127181631527").roles.cache.get("804129560840896562");
-                        break;
-                    case "admin":
-                        mainrole = await client.guilds.cache.get("715701127181631527").roles.cache.get("715712712117715005");
-                        staffhelp = await client.guilds.cache.get("715701127181631527").roles.cache.get("804129560840896562");
-                        break;
-                    case "seller admin":
-                        mainrole = await client.guilds.cache.get("715701127181631527").roles.cache.get("771395530294296598");
-                        break;
-                    case "event manager":
-                        mainrole = await client.guilds.cache.get("715701127181631527").roles.cache.get("816359185654349894");
-                        break;
-                }
-                await user.send(`Welcome to Night Visions staff as a/an ${rolename}. Your unique one-time invite to the staff server is ${invitelink}.\n\n Please be sure you write down your timezone in <#804930133324464169> and let the other staff know if you have any issues!`);
-                let userRole = await client.guilds.cache.get("715701127181631527").members.cache.get(user.id).roles;
-                try {
-                    await userRole.add(mainrole);
-                    await userRole.add(staffhelp);
-                } catch {
-
-                }
-            }
-
             //Misc Commands
             {
                 //+bored
                 if (isValidCommand(message, "bored")) {
-                    const { activity, price, type } = await fetch('https://www.boredapi.com/api/activity').then(response => response.json());
+                    const {
+                        activity,
+                        price,
+                        type
+                    } = await fetch('https://www.boredapi.com/api/activity').then(response => response.json());
                     await message.channel.send(`A ${type} activity you can do is ${activity}`);
                 }
             }
@@ -1849,36 +1960,34 @@ client.on('message', async function (message) {
             }
         });
     });
+
+    client.on('guildMemberRemove', async (member) => {
+        if (await verification.count({
+                where: {
+                    UserId: `${member.id}`
+                }
+            }) === 0) return;
+        else {
+            await verification.destroy({
+                where: {
+                    UserId: `${member.id}`
+                }
+            });
+        }
+    });
 }
-
-client.on('guildMemberRemove', async (member) => {
-    if (await verification.count({
-            where: {
-                UserId: `${member.id}`
-            }
-        }) === 0) return;
-    else {
-        await verification.destroy({
-            where: {
-                UserId: `${member.id}`
-            }
-        });
-    }
-});
-
-
-
-
 
 //Login to the discord API
 client.login(process.env.TOKEN);
 
 
-///
-///
-///FUNCTIONS BELOW THIS POINT. CAN BE CALLED WHEN NEEDED
-///
-///
+//
+//
+//FUNCTIONS BELOW THIS POINT. CAN BE CALLED WHEN NEEDED
+//
+//
+
+
 
 //remove symbols from user ID to get just numbers
 async function normaliseID(id) {
@@ -1898,4 +2007,25 @@ async function writedata() {
     await fs.writeFile('storage/tickets.json', JSON.stringify(tickets), (err) => {
         if (err) console.log(err);
     });
+}
+
+
+async function play(guild, song) {
+    const serverQueue = queue.get(guild.id);
+
+    if (!song) {
+        serverQueue.voiceChannel.leave();
+        queue.delete(guild.id);
+        return;
+    }
+
+    const dispatcher = await serverQueue.connection.play(ytdl(song.url, {
+            filter: "audioonly"
+        }))
+        .on('finish', async () => {
+            serverQueue.songs.shift();
+            play(guild, serverQueue.songs[0])
+        });
+    await dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+    serverQueue.textChannel.send(`Now Playing : **${song.title}**`);
 }
