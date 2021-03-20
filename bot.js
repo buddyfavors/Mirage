@@ -1802,9 +1802,7 @@ client.on('message', async function (message) {
                     var args = await message.content.split(" ").slice(1).join(" ")
                     if (!message.member.voice.channel) return await message.channel.send("You need to be in a VC to do that.");
                     if (!serverQueue) return await message.channel.send("There is nothing playing!");
-                    await message.channel.send(`**__Queue__**${serverQueue.songs.map(song => `**-** ${song.title}\n`)}Now Playing: **${serverQueue.songs[0].title}**`, {
-                        split: true
-                    })
+                    await message.channel.send(`**__Queue__**\n${serverQueue.songs.map(song => ` -${song.title}\n`).join("")}\nNow Playing: **${serverQueue.songs[0].title}**`, {split:false})
                 }
                 if (isValidCommand(message, "pause")) {
                     var args = await message.content.split(" ").slice(1).join(" ")
@@ -1820,7 +1818,7 @@ client.on('message', async function (message) {
                     if (!message.member.voice.channel) return await message.channel.send("You need to be in a VC to do that.");
                     if (!serverQueue) return await message.channel.send("There is nothing playing!");
                     if (serverQueue.playing) return await message.channel.send("Music is already playing!");
-                    serverQueue.playing = resume;
+                    serverQueue.playing = true;
                     await serverQueue.connection.dispatcher.resume();
                     await message.react('⏯️')
                 }
