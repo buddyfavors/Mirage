@@ -1554,6 +1554,11 @@ client.on('message', async function (message) {
                                         .setColor(3066993)
                                         .addField("Night Visions 18+", `Verified by ${MemberData[i].Verifier}`);
                                 }
+                                if (MemberData[i].GuildId === '671494359056646176') {
+                                    await embed.setDescription("Is verified in the following servers")
+                                        .setColor(3066993)
+                                        .addField("Land Of Sweets 18+", `Verified by ${MemberData[i].Verifier}`);
+                                }
                             }
                         } catch {
                             await embed.addField("Unverified", "User is unverified in any official partnered servers. (They may exist in a test server)")
