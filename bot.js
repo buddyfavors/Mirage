@@ -1361,7 +1361,7 @@ client.on('message', async function (message) {
                         if(!args.length){
                             var embed = await new MessageEmbed()
                             .setTitle("Role Shop")
-                            .setDescription("Succubus - 2000 Credits\nNude Gods - 800 Credits\n Nude Goddesses - 800 Credits\n Thicc Thighs Save Lives - 3,000 Credits\nSlytherin - 5,000 Credits\nGryffindor - 5,000 Credits\nHufflepuff - 5,000 Credits\nRavenclaw - 5,000 Credits\nItty bitty titty committee - 1,000 Credits\nCutie - 500 Credits\nTitty Lover - 600 Credits\nNymphomaniac - 6,000 Credits\nAnti Social\n I talk way too much - 10,000 Credits\nDC - 900 Credits\nMarvel - 900 Credits\nHeroes - 900 Credits\nVillains - 900 Credits\nDark Humour Room - 3,000 Credits\nAss Lover - 600 Credits\nFeet - 500 Credits")
+                            .setDescription("Succubus - 2000 Credits\nNude Gods - 800 Credits\n Nude Goddesses - 800 Credits\n Thicc Thighs Save Lives - 3,000 Credits\nSlytherin - 5,000 Credits\nGryffindor - 5,000 Credits\nHufflepuff - 5,000 Credits\nRavenclaw - 5,000 Credits\nItty bitty titty committee - 1,000 Credits\nCutie - 500 Credits\nTitty Lover - 600 Credits\nNymphomaniac - 6,000 Credits\nAnti Social - 2,000 Credits\n I talk way too much - 10,000 Credits\nDC - 900 Credits\nMarvel - 900 Credits\nHeroes - 900 Credits\nVillains - 900 Credits\nDark Humour Room - 3,000 Credits\nAss Lover - 600 Credits\nFeet - 500 Credits")
                             .addField("Usage", "+buy I Talk way too much")
                             .setColor("#f000ff");
                             await message.channel.send(embed);
@@ -1502,7 +1502,7 @@ client.on('message', async function (message) {
                             if (UserData[message.author.id].credits >= 500) {
                                 UserData[message.author.id].credits -= 500;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879627173330965"));
-                                await message.reply("You successfully brought \"Succubus\"!");
+                                await message.reply("You successfully brought \"Cutie\"!");
                             }
                             else{
                                 await message.reply("You don't have enough credits!");
