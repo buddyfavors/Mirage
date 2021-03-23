@@ -1358,12 +1358,278 @@ client.on('message', async function (message) {
                 {
                     if (isValidCommand(message, "buy")) {
                         var args = await message.content.split(" ").slice(1).join(" ");
-                        if (args.toLowerCase() === "foot slut") {
-                            if (UserData[message.author.id].credits >= 1000) {
-                                UserData[message.author.id].credits -= 1000;
-                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.find(x => x.name === "Foot Slut"));
+                        if(!args.length){
+                            var embed = await new MessageEmbed()
+                            .setTitle("Role Shop")
+                            .setDescription("Succubus - 2000 Credits\nNude Gods - 800 Credits\n Nude Goddesses - 800 Credits\n Thicc Thighs Save Lives - 3,000 Credits\nSlytherin - 5,000 Credits\nGryffindor - 5,000 Credits\nHufflepuff - 5,000 Credits\nRavenclaw - 5,000 Credits\nItty bitty titty committee - 1,000 Credits\nCutie - 500 Credits\nTitty Lover - 600 Credits\nNymphomaniac - 6,000 Credits\nAnti Social\n I talk way too much - 10,000 Credits\nDC - 900 Credits\nMarvel - 900 Credits\nHeroes - 900 Credits\nVillains - 900 Credits\nDark Humour Room - 3,000 Credits\nAss Lover - 600 Credits\nFeet - 500 Credits")
+                            .addField("Usage", "+buy I Talk way too much")
+                            .setColor("#f000ff");
+                            await message.channel.send(embed);
+                        }
+
+                        if (args.toLowerCase() === "succubus" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879619928981545")) {
+                            if (UserData[message.author.id].credits >= 2000) {
+                                UserData[message.author.id].credits -= 2000;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879619928981545"));
+                                await message.reply("You successfully brought \"Succubus\"!");
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
                             }
                         }
+
+                        if (args.toLowerCase() === "nude gods" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879623620493322")) {
+                            if (UserData[message.author.id].credits >= 800) {
+                                UserData[message.author.id].credits -= 800;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879623620493322"));
+                                await message.reply("You successfully brought \"Nude Gods\"!");
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "nude goddesses" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879623658111016")) {
+                            if (UserData[message.author.id].credits >= 800) {
+                                UserData[message.author.id].credits -= 800;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879623658111016"));
+                                await message.reply("You successfully brought \"Nude Goddesses\"!");
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "thicc thighs save lives" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879623733215302")) {
+                            if (UserData[message.author.id].credits >= 3000) {
+                                UserData[message.author.id].credits -= 3000;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879623733215302"));
+                                await message.reply("You successfully brought \"Thicc Thighs Save Lives\"!");
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "slytherin" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("814110158774599712 ")) {
+                            if (UserData[message.author.id].credits >= 5000) {
+                                UserData[message.author.id].credits -= 5000;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("814110158774599712 "));
+                                //Webhook
+                                const guild = client.guilds.cache.get(message.guild.id);
+                                const webhooks = await guild.fetchWebhooks();
+                                const webhook = webhooks.get("823982415122006097");
+                                var announcement = "SLYTHERIN!!";
+                                await webhook.send(announcement, {
+                                    username: "Sorting hat",
+                                    avatarURL: "https://static.wikia.nocookie.net/harrypotter/images/6/62/Sorting_Hat.png/revision/latest/scale-to-width-down/350?cb=20161120072849"
+                                });
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "gryffindor" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("814111266717171762")) {
+                            if (UserData[message.author.id].credits >= 5000) {
+                                UserData[message.author.id].credits -= 5000;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("814111266717171762"));
+                                //Webhook
+                                const guild = client.guilds.cache.get(message.guild.id);
+                                const webhooks = await guild.fetchWebhooks();
+                                const webhook = webhooks.get("823982415122006097");
+                                var announcement = "Gryffindor, where dwell the brave at heart!";
+                                await webhook.send(announcement, {
+                                    username: "Sorting hat",
+                                    avatarURL: "https://static.wikia.nocookie.net/harrypotter/images/6/62/Sorting_Hat.png/revision/latest/scale-to-width-down/350?cb=20161120072849"
+                                });
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "hufflepuff" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("814110519609786389")) {
+                            if (UserData[message.author.id].credits >= 5000) {
+                                UserData[message.author.id].credits -= 5000;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("814110519609786389"));
+                                //Webhook
+                                const guild = client.guilds.cache.get(message.guild.id);
+                                const webhooks = await guild.fetchWebhooks();
+                                const webhook = webhooks.get("823982415122006097");
+                                var announcement = "You might belong in Hufflepuff,\nWhere they are just and loyal,\nThose patient Hufflepuffs are true,\nAnd unafraid of toil";
+                                await webhook.send(announcement, {
+                                    username: "Sorting hat",
+                                    avatarURL: "https://static.wikia.nocookie.net/harrypotter/images/6/62/Sorting_Hat.png/revision/latest/scale-to-width-down/350?cb=20161120072849"
+                                });
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "ravenclaw" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("814111644556066856")) {
+                            if (UserData[message.author.id].credits >= 5000) {
+                                UserData[message.author.id].credits -= 5000;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("814111644556066856"));
+                                //Webhook
+                                const guild = client.guilds.cache.get(message.guild.id);
+                                const webhooks = await guild.fetchWebhooks();
+                                const webhook = webhooks.get("823982415122006097");
+                                var announcement = "Or yet in wise old Ravenclaw,\nif you've a ready mind,\nWhere those of wit and learning,\nWill always find their kind.";
+                                await webhook.send(announcement, {
+                                    username: "Sorting hat",
+                                    avatarURL: "https://static.wikia.nocookie.net/harrypotter/images/6/62/Sorting_Hat.png/revision/latest/scale-to-width-down/350?cb=20161120072849"
+                                });
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "itty bitty titty committee" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879627122212875")) {
+                            if (UserData[message.author.id].credits >= 1000) {
+                                UserData[message.author.id].credits -= 1000;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879627122212875"));
+                                await message.reply("You successfully brought \"Itty Bitty Titty Committee\"! Welcome to the club!");
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "cutie" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879627173330965")) {
+                            if (UserData[message.author.id].credits >= 500) {
+                                UserData[message.author.id].credits -= 500;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879627173330965"));
+                                await message.reply("You successfully brought \"Succubus\"!");
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "titty lover" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879637218689024")) {
+                            if (UserData[message.author.id].credits >= 600) {
+                                UserData[message.author.id].credits -= 600;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879637218689024"));
+                                await message.reply("You successfully brought \"Titty Lover\"!");
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "nymphomaniac" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879627496554496")) {
+                            if (UserData[message.author.id].credits >= 6000) {
+                                UserData[message.author.id].credits -= 6000;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879627496554496"));
+                                await message.reply("You successfully brought \"Nymphomaniac\"! What does that mean..? Hey Google!");
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "anti social" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879630030045246")) {
+                            if (UserData[message.author.id].credits >= 2000) {
+                                UserData[message.author.id].credits -= 2000;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879630030045246"));
+                                await message.reply("\*silence\* (You got it)");
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "i talk way too much" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879630465204264")) {
+                            if (UserData[message.author.id].credits >= 10000) {
+                                UserData[message.author.id].credits -= 10000;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879630465204264"));
+                                await message.reply("Yes you do. Also, You successfully brought \"I talk wayyyyy too much\"!");
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "dc" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879630553940018")) {
+                            if (UserData[message.author.id].credits >= 900) {
+                                UserData[message.author.id].credits -= 900;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879630553940018"));
+                                await message.reply("You successfully brought \"DC\"!");
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "marvel" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879633376837662")) {
+                            if (UserData[message.author.id].credits >= 900) {
+                                UserData[message.author.id].credits -= 900;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879633376837662"));
+                                await message.reply("You successfully brought \"Marvel\"!");
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "heroes" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879633413799936")) {
+                            if (UserData[message.author.id].credits >= 900) {
+                                UserData[message.author.id].credits -= 900;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879633413799936"));
+                                await message.reply("You successfully brought \"heroes\"!");
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "villains" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879633439752212")) {
+                            if (UserData[message.author.id].credits >= 900) {
+                                UserData[message.author.id].credits -= 900;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879633439752212"));
+                                await message.reply("You successfully brought \"Villains\"!");
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "dark humour room" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879637160099871")) {
+                            if (UserData[message.author.id].credits >= 3000) {
+                                UserData[message.author.id].credits -= 3000;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879637160099871"));
+                                await message.reply("You successfully brought access to the dark humour room!");
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "ass lover" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879637205975051")) {
+                            if (UserData[message.author.id].credits >= 600) {
+                                UserData[message.author.id].credits -= 600;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879637205975051"));
+                                await message.reply("You successfully brought \"Ass Lovers\"!");
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+
+                        if (args.toLowerCase() === "feet" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("814110125417037844")) {
+                            if (UserData[message.author.id].credits >= 500) {
+                                UserData[message.author.id].credits -= 500;
+                                await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("814110125417037844"));
+                                await message.reply("You successfully brought \"feet\"!");
+                            }
+                            else{
+                                await message.reply("You don't have enough credits!");
+                            }
+                        }
+                        
                     }
                 }
             }
