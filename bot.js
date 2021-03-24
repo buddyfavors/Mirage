@@ -1675,6 +1675,7 @@ client.on('message', async function (message) {
 
                     }
                 }
+                
                 //View stats about the bot - +status
                 if (isValidCommand(message, "status")) {
                     await message.channel.send(`Uptime: ${(Math.floor(process.uptime())/60).toString()} Minutes\nMemory Usage: ${process.memoryUsage().toString()}`);
