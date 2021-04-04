@@ -1755,7 +1755,8 @@ client.on('message', async function (message) {
                     let MemberData = await infracs.findAll({
                         raw: true,
                         where: {
-                            UserId: await parseInt(`${await normaliseID(args[0])}`)
+                            UserId: await parseInt(`${await normaliseID(args[0])}`),
+                            GuildId: message.guild.id
                         }
                     });
                     MemberData = await JSON.parse(await JSON.stringify(MemberData));
