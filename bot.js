@@ -19,7 +19,6 @@ const yts = require("yt-search");
 const db = require('./database/database');
 const verification = require('./models/VerificationModel');
 const infracs = require('./models/InfracModel');
-const { METHODS } = require("http");
 
 //Global Variables
 const prefix = "+"; //defines prefix for the bot
