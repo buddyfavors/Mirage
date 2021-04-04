@@ -1711,7 +1711,7 @@ client.on('message', async function (message) {
                 }
 
                 //Add user note - +note @user [reason]
-                if (isValidCommand(message, "note")) {
+                if (isValidCommand(message, "note") || message.content.toLowerCase().startsWith("!setnote")) {
                     let member = await message.guild.members.cache.get(await normaliseID(args[0]));
                     let reason = await message.content.split(" ").slice(1).slice(1).join(" ");
 
@@ -1731,7 +1731,7 @@ client.on('message', async function (message) {
                 }
 
                 //Add user warn - +warn @user [reason]
-                if (isValidCommand(message, "warn")) {
+                if (isValidCommand(message, "warn") || message.content.toLowerCase().startsWith("-warn") || message.content.toLowerCase().startsWith("~strike")) {
                     let member = await message.guild.members.cache.get(await normaliseID(args[0]));
                     let reason = await args.slice(1).join(" ");
                     try {
@@ -1751,7 +1751,7 @@ client.on('message', async function (message) {
                 }
 
                 //View infractions of user - +infrac @user
-                if (isValidCommand(message, "infrac")) {
+                if (isValidCommand(message, "infrac") || isValidCommand(message, "infractions")) {
                     let MemberData = await infracs.findAll({
                         raw: true,
                         where: {
@@ -1760,33 +1760,83 @@ client.on('message', async function (message) {
                         }
                     });
                     MemberData = await JSON.parse(await JSON.stringify(MemberData));
-                    var embed = new MessageEmbed().setTitle("Infraction data").setThumbnail(message.author.avatarURL({dynamic: true, size: 128}));
+                    var embed = new MessageEmbed().setTitle("Infraction data").setThumbnail(client.users.cache.get(await normaliseID(args[0])).avatarURL({dynamic: true, size: 128}));
                     await embed.setDescription(`Infractions for <@!${await normaliseID(args[0])}>\n\nNo Infraction data to show`);
                     for (var i = 0; i <= MemberData.length - 1; i++) {
+
+                        var guild = "";
+                        if (MemberData[i].GuildId === '768896221556506724' || MemberData[i].GuildId === '795282757630165002') {
+                            guild = "Purgatory 18+";
+                        }
+                        if (MemberData[i].GuildId === '715701127181631527') {
+                            guild = "Night Visions 18+";
+                        }
+                        if (MemberData[i].GuildId === '671494359056646176') {
+                            guild = "Land of Sweets 18+";
+                        }
+
                         if(MemberData[i].InfractionType === 1){
                             await embed.setDescription(`Infractions for <@!${await normaliseID(args[0])}>`);
-                            await embed.addField("Note",`ID: ${MemberData[i].InfracID}\nAdded By: ${MemberData[i].AddedById}\nReason: ${MemberData[i].Infraction}\nTimestamp: ${MemberData[i].createdAt}`)
+                            await embed.addField("Note",`ID: ${MemberData[i].InfracID}\nAdded By: <@!${MemberData[i].AddedById}>\nReason: ${MemberData[i].Infraction}\nGuild: ${guild}\nTimestamp: ${MemberData[i].createdAt}`)
                         }
                         else if(MemberData[i].InfractionType === 2){
                             await embed.setDescription(`Infractions for <@!${await normaliseID(args[0])}>`);
-                            await embed.addField("Warn",`ID: ${MemberData[i].InfracID}\nAdded By: ${MemberData[i].AddedById}\nReason: ${MemberData[i].Infraction}\nTimestamp: ${MemberData[i].createdAt}`)
+                            await embed.addField("Warn",`ID: ${MemberData[i].InfracID}\nAdded By: <@!${MemberData[i].AddedById}>\nReason: ${MemberData[i].Infraction}\nGuild: ${guild}\nTimestamp: ${MemberData[i].createdAt}`)
 
                         }
                     }
                     await message.channel.send(embed);
                 }
 
+                //View infractions of user - +infrac @user
+                if (isValidCommand(message, "pinfrac") || isValidCommand(message, "pinfractions")) {
+                    let MemberData = await infracs.findAll({
+                        raw: true,
+                        where: {
+                            UserId: await parseInt(`${await normaliseID(args[0])}`),
+                        }
+                    });
+                    MemberData = await JSON.parse(await JSON.stringify(MemberData));
+                    var embed = new MessageEmbed().setTitle("Infraction data").setThumbnail(client.users.cache.get(await normaliseID(args[0])).avatarURL({dynamic: true, size: 128}));
+                    await embed.setDescription(`Infractions for <@!${await normaliseID(args[0])}>\n\nNo Infraction data to show`);
+                    for (var i = 0; i <= MemberData.length - 1; i++) {
+
+                        var guild = "";
+                        if (MemberData[i].GuildId === '768896221556506724' || MemberData[i].GuildId === '795282757630165002') {
+                            guild = "Purgatory 18+";
+                        }
+                        if (MemberData[i].GuildId === '715701127181631527') {
+                            guild = "Night Visions 18+";
+                        }
+                        if (MemberData[i].GuildId === '671494359056646176') {
+                            guild = "Land of Sweets 18+";
+                        }
+
+                        if(MemberData[i].InfractionType === 1){
+                            await embed.setDescription(`Infractions for <@!${await normaliseID(args[0])}>`);
+                            await embed.addField("Note",`ID: ${MemberData[i].InfracID}\nAdded By: <@!${(MemberData[i].AddedById)}>\nReason: ${MemberData[i].Infraction}\nGuild: ${guild}\nTimestamp: ${MemberData[i].createdAt.substring(0, 10)}`)
+                        }
+                        else if(MemberData[i].InfractionType === 2){
+                            await embed.setDescription(`Infractions for <@!${await normaliseID(args[0])}>`);
+                            await embed.addField("Warn",`ID: ${MemberData[i].InfracID}\nAdded By: <@!${(MemberData[i].AddedById)}>\nReason: ${MemberData[i].Infraction}\nGuild: ${guild}\nTimestamp: ${MemberData[i].createdAt.substring(0, 10)}`)
+                        }
+                    }
+                    await message.channel.send(embed);
+                }
+
                 //+rem <infracid>
-                if (isValidCommand(message, "rem")) {
+                if (isValidCommand(message, "rem") || isValidCommand(message, "remove")) {
                     if (await infracs.count({
                         where: {
-                            InfracID: `${args[0]}`
+                            InfracID: `${args[0]}`,
+                            GuildId: message.guild.id
                         }
                     }) === 0) return await message.channel.send("No infractions to remove");
                     else {
                         await infracs.destroy({
                             where: {
-                                InfracID: `${args[0]}`
+                                InfracID: `${args[0]}`,
+                                GuildId: message.guild.id
                             }
                         });
                         await message.channel.send("Successfully removed infraction");
