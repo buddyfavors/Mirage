@@ -18,6 +18,8 @@ const yts = require("yt-search");
 //Database Import
 const db = require('./database/database');
 const verification = require('./models/VerificationModel');
+const infracs = require('./models/InfracModel');
+const { METHODS } = require("http");
 
 //Global Variables
 const prefix = "+"; //defines prefix for the bot
@@ -45,8 +47,10 @@ client.on('ready', async () => {
 
     try {
         //initialise all database models.
-        await verification.init(db)
-        await verification.sync()
+        await verification.init(db);
+        await verification.sync();
+        await infracs.init(db);
+        await infracs.sync();
     } catch (err) {
         await console.log(err)
     };
@@ -1709,64 +1713,83 @@ client.on('message', async function (message) {
                 //Add user note - +note @user [reason]
                 if (isValidCommand(message, "note")) {
                     let member = await message.guild.members.cache.get(await normaliseID(args[0]));
-                    let reason = await args.slice(1).join(" ");
-                    if (!InfracData[member.id]) {
-                        InfracData[member.id] = {
-                            Notes: `${reason},${message.createdAt}/${message.createdAt}/${message.createdAt}`,
-                            Warns: "",
-                            SoftBans: "",
-                            Kicks: ""
-                        };
-                    } else {
-                        InfracData[member.id].Notes = InfracData[member.id].Notes + `,${reason}` + `,${message.createdAt}`;
+                    let reason = await message.content.split(" ").slice(1).slice(1).join(" ");
+
+                    try {
+                        const Infrac = await infracs.create({
+                            UserId: member.id,
+                            GuildId: message.guild.id,
+                            AddedById: message.author.id,
+                            InfractionType: "1",
+                            Infraction: reason
+                        });
+                        await message.channel.send("I have successfully added that to the log file!")
+                    } catch (error) {
+                        await console.log(error);
+                        await message.channel.send("An error occured whilst adding that");
                     }
-                    await writedata();
-                    message.channel.send("I have successfully added that to the log file!")
+                }
+
+                //Add user warn - +warn @user [reason]
+                if (isValidCommand(message, "warn")) {
+                    let member = await message.guild.members.cache.get(await normaliseID(args[0]));
+                    let reason = await args.slice(1).join(" ");
+                    try {
+                        const Infrac = await infracs.create({
+                            UserId: member.id,
+                            GuildId: message.guild.id,
+                            AddedById: message.author.id,
+                            Infraction: reason,
+                            InfractionType: "2"
+                        });
+                        await member.send(`⚠️You have been warned for ${reason}⚠️`);
+                        await message.channel.send("I have successfully added that to the log file!")
+                    } catch (error) {
+                        await console.log("An error occured whilst adding data to DB");
+                        await message.channel.send("An error occured whilst adding that");
+                    }
                 }
 
                 //View infractions of user - +infrac @user
                 if (isValidCommand(message, "infrac")) {
-                    let id = args[0];
-                    var member = message.guild.members.cache.get(await normaliseID(args[0]));
-                    if (!InfracData[member.id]) {
-                        await message.channel.send(`${member} has no infractions!`)
-                    } else {
-                        var embed = new MessageEmbed().setTitle(member.displayName);
-                        let UserNotes = (InfracData[member.id].Notes).split(',');
-                        let UserWarns = (InfracData[member.id].Warns).split(',');
-                        let UserKicks = (InfracData[member.id].Kicks).split(',');
-                        let UserSBans = (InfracData[member.id].SoftBans).split(',');
-                        if (UserNotes.length > 0) {
-                            for (var i = 0; i <= UserNotes.length - 1; i++) {
-                                let dateadded = new Date(UserNotes[i + 1]);
-                                let today = new Date(`${message.createdAt.getDate()}/${message.createdAt.getMonth()}/${message.createdAt.getFullYear()}`);
-                                var dayssince = today - dateadded / (1000 * 60 * 60 * 24);
-                                await embed.addField(`Note ${i}: Added ${dayssince}`, UserNotes[i]);
-                                i++
-                            }
+                    let MemberData = await infracs.findAll({
+                        raw: true,
+                        where: {
+                            UserId: await parseInt(`${await normaliseID(args[0])}`)
                         }
-                        if (!UserWarns.length > 0) {
-                            for (var i = 0; i <= UserWarns.length - 1; i++) {
-                                await embed.addField(`Warn ${i}:`, UserWarns[i]);
-                            }
+                    });
+                    MemberData = await JSON.parse(await JSON.stringify(MemberData));
+                    var embed = new MessageEmbed().setTitle("Infraction data").setThumbnail(message.author.avatarURL({dynamic: true, size: 128}));
+                    await embed.setDescription(`Infractions for <@!${await normaliseID(args[0])}>\n\nNo Infraction data to show`);
+                    for (var i = 0; i <= MemberData.length - 1; i++) {
+                        if(MemberData[i].InfractionType === 1){
+                            await embed.setDescription(`Infractions for <@!${await normaliseID(args[0])}>`);
+                            await embed.addField("Note",`ID: ${MemberData[i].InfracID}\nAdded By: ${MemberData[i].AddedById}\nReason: ${MemberData[i].Infraction}\nTimestamp: ${MemberData[i].createdAt}`)
                         }
-                        if (!UserKicks.length > 0) {
-                            for (var i = 0; i <= UserKicks.length - 1; i++) {
-                                await embed.addField(`Kick ${i}:`, UserKicks[i]);
-                            }
+                        else if(MemberData[i].InfractionType === 2){
+                            await embed.setDescription(`Infractions for <@!${await normaliseID(args[0])}>`);
+                            await embed.addField("Warn",`ID: ${MemberData[i].InfracID}\nAdded By: ${MemberData[i].AddedById}\nReason: ${MemberData[i].Infraction}\nTimestamp: ${MemberData[i].createdAt}`)
+
                         }
-                        if (!UserSBans.length > 0) {
-                            for (var i = 0; i <= UserSBans.length - 1; i++) {
-                                await embed.addField(`Soft-Ban ${i}:`, UserSBans[i]);
-                            }
-                        }
-                        message.channel.send(embed);
                     }
+                    await message.channel.send(embed);
                 }
 
-                //+remnote @user - non functional
-                if (isValidCommand(message, "remnote")) {
-                    let member = message.guild.members.cache.get(await normaliseID(args[0]));
+                //+rem <infracid>
+                if (isValidCommand(message, "rem")) {
+                    if (await infracs.count({
+                        where: {
+                            InfracID: `${args[0]}`
+                        }
+                    }) === 0) return await message.channel.send("No infractions to remove");
+                    else {
+                        await infracs.destroy({
+                            where: {
+                                InfracID: `${args[0]}`
+                            }
+                        });
+                        await message.channel.send("Successfully removed infraction");
+                    }
                 }
 
                 //+whois @user

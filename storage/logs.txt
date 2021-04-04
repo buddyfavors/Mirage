@@ -1,1 +1,2 @@
-function now() { [native code] }, TypeError: song.title.length is not a function
+function now() { [native code] }, TypeError: song.title.length is not a functionfunction now() { [native code] }, SequelizeDatabaseError: (conn=10264863, no: 1054, SQLState: 42S22) Unknown column 'VerificationModel.InfracID' in 'where clause'
+sql: SELECT count(*) AS `count` FROM `tblVerifications` AS `VerificationModel` WHERE `VerificationModel`.`InfracID` = '5'; - parameters:[]
