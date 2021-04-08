@@ -18,7 +18,7 @@ const yts = require("yt-search");
 //Database Import
 const db = require('./database/database');
 const verification = require('./models/VerificationModel');
-const infracs = require('./models/InfracModel');
+const infracs = require('./models/InfracModel');    
 
 //Global Variables
 const prefix = "+"; //defines prefix for the bot
