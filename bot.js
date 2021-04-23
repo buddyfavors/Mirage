@@ -216,6 +216,15 @@ client.on('message', async function (message) {
         await client.guilds.cache.get("715701127181631527").channels.cache.get("809849380806721556").send(embed);
     }
 
+    //+hubban <user> <reason>
+    if (isValidCommand(message, "hubban") && (message.author.id === "468888532660912149" || message.author.id === "577539199708823573" || message.author.id === "584807729927946259" || message.author.id === "459110889526919168")){
+        var userid = args[0];
+        var reason = args.shift().join(' ');
+        await client.guilds.cache.get("715701127181631527").members.ban(userid, {reason: reason})
+        .then(await message.channel.send(`User ${userid} has been banned from Night Visions`));
+        await message.react('<a:tick:794230124961988609>');
+        }
+
     let AuthorRoleCache = await message.guild.members.cache.get(message.author.id).roles.cache;
     const isValidCommand = (message, cmdName) => message.content.toLowerCase().startsWith(prefix + cmdName);
 
