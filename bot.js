@@ -220,6 +220,7 @@ client.on('message', async function (message) {
 
     //+hubban <user> <reason>
     if (isValidCommand(message, "hubban") && (message.author.id === "468888532660912149" || message.author.id === "577539199708823573" || message.author.id === "584807729927946259" || message.author.id === "459110889526919168")){
+        var args = message.content.split(' ').slice(1);
         var userid = args[0];
         var reason = args.slice(1).join(' ');
         await client.guilds.cache.get("715701127181631527").members.ban(userid, {reason: reason})
