@@ -190,6 +190,8 @@ client.on('ready', async () => {
 //All Main commands
 client.on('message', async function (message) {
     if (message.author.bot) return;
+    const isValidCommand = (message, cmdName) => message.content.toLowerCase().startsWith(prefix + cmdName);
+
 
     //Vent anon
     if (message.channel.type === 'dm' && message.content.toLowerCase().startsWith("vent")) {
@@ -219,14 +221,13 @@ client.on('message', async function (message) {
     //+hubban <user> <reason>
     if (isValidCommand(message, "hubban") && (message.author.id === "468888532660912149" || message.author.id === "577539199708823573" || message.author.id === "584807729927946259" || message.author.id === "459110889526919168")){
         var userid = args[0];
-        var reason = args.shift().join(' ');
+        var reason = args.slice(1).join(' ');
         await client.guilds.cache.get("715701127181631527").members.ban(userid, {reason: reason})
         .then(await message.channel.send(`User ${userid} has been banned from Night Visions`));
         await message.react('<a:tick:794230124961988609>');
         }
 
     let AuthorRoleCache = await message.guild.members.cache.get(message.author.id).roles.cache;
-    const isValidCommand = (message, cmdName) => message.content.toLowerCase().startsWith(prefix + cmdName);
 
     //Main NV Commands - Refactored
     if (message.guild === client.guilds.cache.get("715701127181631527") || message.guild === client.guilds.cache.get("806559513414991872") || message.guild === client.guilds.cache.get("789227902839422986")) {
