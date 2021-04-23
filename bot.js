@@ -2027,7 +2027,7 @@ client.on('message', async function (message) {
                 if (isValidCommand(message, "verreq")) {
                     await message.delete();
                     await message.channel.send("Hi there! I'm Mirage, Night Visions' Helper. To help get you verified, please follow the steps below, then staff will review this and verify you! (Please be patient though as the staff have a life outside of discord as well!!)\nTo verify, please do the following:\n➤ Step 1. Send a picture of your ID and a piece of paper that reads \"This servers name, todays date and discord username\"\n➤ Step 2. Send a second picture of you holding the ID and the piece of paper close to your face so we can verify that the ID does belong to you.");
-                    await message.channel.send("Also please note we do NOT need to see your Address, License number, name, etc.\nWe only require the ID type, expiry date, your picture and DOB Visible")
+                    await message.channel.send("\nWe want to emphasize security. We do not want to see your address, license number or any other information. We just want to see your DOB (date of birth) and your photo that is it.\nWe will accept cross verification from any of the servers listed below.\n1. Purgatory\n2. Night Visionss")
                 }
 
                 //+setStatus
