@@ -2311,7 +2311,8 @@ client.on('message', async function (message) {
         else {
             await verification.destroy({
                 where: {
-                    UserId: `${member.id}`
+                    UserId: `${member.id}`,
+                    GuildId: `715701127181631527`
                 }
             });
         }
