@@ -2342,9 +2342,6 @@ async function writedata() {
     await fs.writeFile('storage/userData.json', JSON.stringify(UserData), (err) => {
         if (err) console.log(err);
     });
-    await fs.writeFile('storage/MemberInfracs.json', JSON.stringify(InfracData), (err) => {
-        if (err) console.log(err);
-    });
     await fs.writeFile('storage/tickets.json', JSON.stringify(tickets), (err) => {
         if (err) console.log(err);
     });
