@@ -18,7 +18,7 @@ const yts = require("yt-search");
 //Database Import
 const db = require('./database/database');
 const verification = require('./models/VerificationModel');
-const infracs = require('./models/InfracModel');    
+const infracs = require('./models/InfracModel');
 
 //Global Variables
 const prefix = "+"; //defines prefix for the bot
@@ -28,7 +28,6 @@ var randomBonus = Math.floor(Math.random() * 75) + 75;
 
 //File storage
 var UserData = JSON.parse(fs.readFileSync('storage/userData.json', 'utf8'));
-var InfracData = JSON.parse(fs.readFileSync('storage/MemberInfracs.json', 'utf-8'));
 var tickets = JSON.parse(fs.readFileSync('storage/tickets.json', 'utf-8'));
 var punishments = JSON.parse(fs.readFileSync('storage/punishments.json', 'utf-8'));
 var games = JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
@@ -219,14 +218,16 @@ client.on('message', async function (message) {
     }
 
     //+hubban <user> <reason>
-    if (isValidCommand(message, "hubban") && (message.author.id === "468888532660912149" || message.author.id === "577539199708823573" || message.author.id === "584807729927946259" || message.author.id === "459110889526919168")){
+    if (isValidCommand(message, "hubban") && (message.author.id === "468888532660912149" || message.author.id === "577539199708823573" || message.author.id === "584807729927946259" || message.author.id === "459110889526919168")) {
         var args = message.content.split(' ').slice(1);
         var userid = args[0];
         var reason = args.slice(1).join(' ');
-        await client.guilds.cache.get("715701127181631527").members.ban(userid, {reason: reason})
-        .then(await message.channel.send(`User ${userid} has been banned from Night Visions`));
+        await client.guilds.cache.get("715701127181631527").members.ban(userid, {
+                reason: reason
+            })
+            .then(await message.channel.send(`User ${userid} has been banned from Night Visions`));
         await message.react('<a:tick:794230124961988609>');
-        }
+    }
 
     let AuthorRoleCache = await message.guild.members.cache.get(message.author.id).roles.cache;
 
@@ -1372,12 +1373,12 @@ client.on('message', async function (message) {
                 {
                     if (isValidCommand(message, "buy")) {
                         var args = await message.content.split(" ").slice(1).join(" ");
-                        if(!args.length){
+                        if (!args.length) {
                             var embed = await new MessageEmbed()
-                            .setTitle("Role Shop")
-                            .setDescription("Succubus - 2000 Credits\nNude Gods - 800 Credits\n Nude Goddesses - 800 Credits\n Thicc Thighs Save Lives - 3,000 Credits\nSlytherin - 5,000 Credits\nGryffindor - 5,000 Credits\nHufflepuff - 5,000 Credits\nRavenclaw - 5,000 Credits\nItty bitty titty committee - 1,000 Credits\nCutie - 500 Credits\nTitty Lover - 600 Credits\nNymphomaniac - 6,000 Credits\nAnti Social - 2,000 Credits\n I talk way too much - 10,000 Credits\nDC - 900 Credits\nMarvel - 900 Credits\nHeroes - 900 Credits\nVillains - 900 Credits\nDark Humour Room - 3,000 Credits\nAss Lover - 600 Credits\nFeet - 500 Credits")
-                            .addField("Usage", "+buy I Talk way too much")
-                            .setColor("#f000ff");
+                                .setTitle("Role Shop")
+                                .setDescription("Succubus - 2000 Credits\nNude Gods - 800 Credits\n Nude Goddesses - 800 Credits\n Thicc Thighs Save Lives - 3,000 Credits\nSlytherin - 5,000 Credits\nGryffindor - 5,000 Credits\nHufflepuff - 5,000 Credits\nRavenclaw - 5,000 Credits\nItty bitty titty committee - 1,000 Credits\nCutie - 500 Credits\nTitty Lover - 600 Credits\nNymphomaniac - 6,000 Credits\nAnti Social - 2,000 Credits\n I talk way too much - 10,000 Credits\nDC - 900 Credits\nMarvel - 900 Credits\nHeroes - 900 Credits\nVillains - 900 Credits\nDark Humour Room - 3,000 Credits\nAss Lover - 600 Credits\nFeet - 500 Credits")
+                                .addField("Usage", "+buy I Talk way too much")
+                                .setColor("#f000ff");
                             await message.channel.send(embed);
                         }
 
@@ -1386,8 +1387,7 @@ client.on('message', async function (message) {
                                 UserData[message.author.id].credits -= 2000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879619928981545"));
                                 await message.reply("You successfully brought \"Succubus\"!");
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1397,8 +1397,7 @@ client.on('message', async function (message) {
                                 UserData[message.author.id].credits -= 800;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879623620493322"));
                                 await message.reply("You successfully brought \"Nude Gods\"!");
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1408,8 +1407,7 @@ client.on('message', async function (message) {
                                 UserData[message.author.id].credits -= 800;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879623658111016"));
                                 await message.reply("You successfully brought \"Nude Goddesses\"!");
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1419,8 +1417,7 @@ client.on('message', async function (message) {
                                 UserData[message.author.id].credits -= 3000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879623733215302"));
                                 await message.reply("You successfully brought \"Thicc Thighs Save Lives\"!");
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1438,8 +1435,7 @@ client.on('message', async function (message) {
                                     username: "Sorting hat",
                                     avatarURL: "https://static.wikia.nocookie.net/harrypotter/images/6/62/Sorting_Hat.png/revision/latest/scale-to-width-down/350?cb=20161120072849"
                                 });
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1457,8 +1453,7 @@ client.on('message', async function (message) {
                                     username: "Sorting hat",
                                     avatarURL: "https://static.wikia.nocookie.net/harrypotter/images/6/62/Sorting_Hat.png/revision/latest/scale-to-width-down/350?cb=20161120072849"
                                 });
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1476,8 +1471,7 @@ client.on('message', async function (message) {
                                     username: "Sorting hat",
                                     avatarURL: "https://static.wikia.nocookie.net/harrypotter/images/6/62/Sorting_Hat.png/revision/latest/scale-to-width-down/350?cb=20161120072849"
                                 });
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1495,8 +1489,7 @@ client.on('message', async function (message) {
                                     username: "Sorting hat",
                                     avatarURL: "https://static.wikia.nocookie.net/harrypotter/images/6/62/Sorting_Hat.png/revision/latest/scale-to-width-down/350?cb=20161120072849"
                                 });
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1506,8 +1499,7 @@ client.on('message', async function (message) {
                                 UserData[message.author.id].credits -= 1000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879627122212875"));
                                 await message.reply("You successfully brought \"Itty Bitty Titty Committee\"! Welcome to the club!");
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1517,8 +1509,7 @@ client.on('message', async function (message) {
                                 UserData[message.author.id].credits -= 500;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879627173330965"));
                                 await message.reply("You successfully brought \"Cutie\"!");
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1528,8 +1519,7 @@ client.on('message', async function (message) {
                                 UserData[message.author.id].credits -= 600;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879637218689024"));
                                 await message.reply("You successfully brought \"Titty Lover\"!");
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1539,8 +1529,7 @@ client.on('message', async function (message) {
                                 UserData[message.author.id].credits -= 6000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879627496554496"));
                                 await message.reply("You successfully brought \"Nymphomaniac\"! What does that mean..? Hey Google!");
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1550,8 +1539,7 @@ client.on('message', async function (message) {
                                 UserData[message.author.id].credits -= 2000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879630030045246"));
                                 await message.reply("\*silence\* (You got it)");
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1561,8 +1549,7 @@ client.on('message', async function (message) {
                                 UserData[message.author.id].credits -= 10000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879630465204264"));
                                 await message.reply("Yes you do. Also, You successfully brought \"I talk wayyyyy too much\"!");
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1572,8 +1559,7 @@ client.on('message', async function (message) {
                                 UserData[message.author.id].credits -= 900;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879630553940018"));
                                 await message.reply("You successfully brought \"DC\"!");
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1583,8 +1569,7 @@ client.on('message', async function (message) {
                                 UserData[message.author.id].credits -= 900;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879633376837662"));
                                 await message.reply("You successfully brought \"Marvel\"!");
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1594,8 +1579,7 @@ client.on('message', async function (message) {
                                 UserData[message.author.id].credits -= 900;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879633413799936"));
                                 await message.reply("You successfully brought \"heroes\"!");
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1605,8 +1589,7 @@ client.on('message', async function (message) {
                                 UserData[message.author.id].credits -= 900;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879633439752212"));
                                 await message.reply("You successfully brought \"Villains\"!");
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1616,8 +1599,7 @@ client.on('message', async function (message) {
                                 UserData[message.author.id].credits -= 3000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879637160099871"));
                                 await message.reply("You successfully brought access to the dark humour room!");
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1627,8 +1609,7 @@ client.on('message', async function (message) {
                                 UserData[message.author.id].credits -= 600;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879637205975051"));
                                 await message.reply("You successfully brought \"Ass Lovers\"!");
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
@@ -1638,12 +1619,11 @@ client.on('message', async function (message) {
                                 UserData[message.author.id].credits -= 500;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("814110125417037844"));
                                 await message.reply("You successfully brought \"feet\"!");
-                            }
-                            else{
+                            } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
-                        
+
                     }
                 }
             }
@@ -1689,7 +1669,7 @@ client.on('message', async function (message) {
 
                     }
                 }
-                
+
                 //View stats about the bot - +status
                 if (isValidCommand(message, "status")) {
                     await message.channel.send(`Uptime: ${(Math.floor(process.uptime())/60).toString()} Minutes\nMemory Usage: ${process.memoryUsage().toString()}`);
@@ -1770,7 +1750,10 @@ client.on('message', async function (message) {
                         }
                     });
                     MemberData = await JSON.parse(await JSON.stringify(MemberData));
-                    var embed = new MessageEmbed().setTitle("Infraction data").setThumbnail(client.users.cache.get(await normaliseID(args[0])).avatarURL({dynamic: true, size: 128}));
+                    var embed = new MessageEmbed().setTitle("Infraction data").setThumbnail(client.users.cache.get(await normaliseID(args[0])).avatarURL({
+                        dynamic: true,
+                        size: 128
+                    }));
                     await embed.setDescription(`Infractions for <@!${await normaliseID(args[0])}>\n\nNo Infraction data to show`);
                     for (var i = 0; i <= MemberData.length - 1; i++) {
 
@@ -1785,13 +1768,12 @@ client.on('message', async function (message) {
                             guild = "Land of Sweets 18+";
                         }
 
-                        if(MemberData[i].InfractionType === 1){
+                        if (MemberData[i].InfractionType === 1) {
                             await embed.setDescription(`Infractions for <@!${await normaliseID(args[0])}>`);
-                            await embed.addField("Note",`ID: ${MemberData[i].InfracID}\nAdded By: <@!${MemberData[i].AddedById}>\nReason: ${MemberData[i].Infraction}\nGuild: ${guild}\nTimestamp: ${MemberData[i].createdAt}`)
-                        }
-                        else if(MemberData[i].InfractionType === 2){
+                            await embed.addField("Note", `ID: ${MemberData[i].InfracID}\nAdded By: <@!${MemberData[i].AddedById}>\nReason: ${MemberData[i].Infraction}\nGuild: ${guild}\nTimestamp: ${MemberData[i].createdAt}`)
+                        } else if (MemberData[i].InfractionType === 2) {
                             await embed.setDescription(`Infractions for <@!${await normaliseID(args[0])}>`);
-                            await embed.addField("Warn",`ID: ${MemberData[i].InfracID}\nAdded By: <@!${MemberData[i].AddedById}>\nReason: ${MemberData[i].Infraction}\nGuild: ${guild}\nTimestamp: ${MemberData[i].createdAt}`)
+                            await embed.addField("Warn", `ID: ${MemberData[i].InfracID}\nAdded By: <@!${MemberData[i].AddedById}>\nReason: ${MemberData[i].Infraction}\nGuild: ${guild}\nTimestamp: ${MemberData[i].createdAt}`)
 
                         }
                     }
@@ -1807,7 +1789,10 @@ client.on('message', async function (message) {
                         }
                     });
                     MemberData = await JSON.parse(await JSON.stringify(MemberData));
-                    var embed = new MessageEmbed().setTitle("Infraction data").setThumbnail(client.users.cache.get(await normaliseID(args[0])).avatarURL({dynamic: true, size: 128}));
+                    var embed = new MessageEmbed().setTitle("Infraction data").setThumbnail(client.users.cache.get(await normaliseID(args[0])).avatarURL({
+                        dynamic: true,
+                        size: 128
+                    }));
                     await embed.setDescription(`Infractions for <@!${await normaliseID(args[0])}>\n\nNo Infraction data to show`);
                     for (var i = 0; i <= MemberData.length - 1; i++) {
 
@@ -1822,13 +1807,12 @@ client.on('message', async function (message) {
                             guild = "Land of Sweets 18+";
                         }
 
-                        if(MemberData[i].InfractionType === 1){
+                        if (MemberData[i].InfractionType === 1) {
                             await embed.setDescription(`Infractions for <@!${await normaliseID(args[0])}>`);
-                            await embed.addField("Note",`ID: ${MemberData[i].InfracID}\nAdded By: <@!${(MemberData[i].AddedById)}>\nReason: ${MemberData[i].Infraction}\nGuild: ${guild}\nTimestamp: ${MemberData[i].createdAt.substring(0, 10)}`)
-                        }
-                        else if(MemberData[i].InfractionType === 2){
+                            await embed.addField("Note", `ID: ${MemberData[i].InfracID}\nAdded By: <@!${(MemberData[i].AddedById)}>\nReason: ${MemberData[i].Infraction}\nGuild: ${guild}\nTimestamp: ${MemberData[i].createdAt.substring(0, 10)}`)
+                        } else if (MemberData[i].InfractionType === 2) {
                             await embed.setDescription(`Infractions for <@!${await normaliseID(args[0])}>`);
-                            await embed.addField("Warn",`ID: ${MemberData[i].InfracID}\nAdded By: <@!${(MemberData[i].AddedById)}>\nReason: ${MemberData[i].Infraction}\nGuild: ${guild}\nTimestamp: ${MemberData[i].createdAt.substring(0, 10)}`)
+                            await embed.addField("Warn", `ID: ${MemberData[i].InfracID}\nAdded By: <@!${(MemberData[i].AddedById)}>\nReason: ${MemberData[i].Infraction}\nGuild: ${guild}\nTimestamp: ${MemberData[i].createdAt.substring(0, 10)}`)
                         }
                     }
                     await message.channel.send(embed);
@@ -1837,11 +1821,11 @@ client.on('message', async function (message) {
                 //+rem <infracid>
                 if (isValidCommand(message, "rem") || isValidCommand(message, "remove")) {
                     if (await infracs.count({
-                        where: {
-                            InfracID: `${args[0]}`,
-                            GuildId: message.guild.id
-                        }
-                    }) === 0) return await message.channel.send("No infractions to remove");
+                            where: {
+                                InfracID: `${args[0]}`,
+                                GuildId: message.guild.id
+                            }
+                        }) === 0) return await message.channel.send("No infractions to remove");
                     else {
                         await infracs.destroy({
                             where: {
@@ -1898,7 +1882,6 @@ client.on('message', async function (message) {
                                     await embed.setDescription("Is verified in the following servers")
                                         .addField("Purgatory", `Verified by ${MemberData[i].Verifier}`)
                                         .setColor(3066993);
-
                                 }
                                 if (MemberData[i].GuildId === '715701127181631527') {
                                     await embed.setDescription("Is verified in the following servers")
@@ -1909,6 +1892,11 @@ client.on('message', async function (message) {
                                     await embed.setDescription("Is verified in the following servers")
                                         .setColor(3066993)
                                         .addField("Land Of Sweets 18+", `Verified by ${MemberData[i].Verifier}`);
+                                }
+                                if (MemberData[i].GuildId === '834857491418447945') {
+                                    await embed.setDescription("Is verified in the following servers")
+                                        .setColor(3066993)
+                                        .addField("Heaven & Hell", `Verified by ${MemberData[i].Verifier}`);
                                 }
                             }
                         } catch {
@@ -2037,8 +2025,7 @@ client.on('message', async function (message) {
                 //+verreq
                 if (isValidCommand(message, "verreq")) {
                     await message.delete();
-                    await message.channel.send("Hi there! I'm Mirage, Night Visions' Helper. To help get you verified, please follow the steps below, then staff will review this and verify you! (Please be patient though as the staff have a life outside of discord as well!!)\nTo verify, please do the following:\n➤ Step 1. Send a picture of your ID and a piece of paper that reads \"This servers name, todays date and discord username\"\n➤ Step 2. Send a second picture of you holding the ID and the piece of paper close to your face so we can verify that the ID does belong to you.");
-                    await message.channel.send("\nWe want to emphasize security. We do not want to see your address, license number or any other information. We just want to see your DOB (date of birth) and your photo that is it.\nWe will accept cross verification from any of the servers listed below.\n1. Purgatory\n2. Night Visionss")
+                    await message.channel.send("Hi there! I'm Mirage, Night Visions' Helper. To help get you verified, please follow the steps below, then staff will review this and verify you! (Please be patient though as the staff have a life outside of discord as well!!)\nTo verify, please do the following:\n➤ Step 1. Send a picture of your ID and a piece of paper that reads \"This servers name, todays date and discord username\"\n➤ Step 2. Send a second picture of you holding the ID and the piece of paper close to your face so we can verify that the ID does belong to you.\nWe want to emphasize security. We do not want to see your address, license number or any other information. We just want to see your DOB (date of birth) and your photo that is it.\n\nWe will accept cross verification from any of the servers listed below.\n1. Purgatory 18+\n2. Land of Sweets 18+\n3. Heaven & Hell")
                 }
 
                 //+setStatus
@@ -2092,8 +2079,7 @@ client.on('message', async function (message) {
                             return await message.channel.send(`**${song.title}** has been added to the queue`)
                         }
                         return undefined;
-                    }
-                    else{
+                    } else {
                         const r = await yts(args);
                         const v = r.videos.slice(0, 1)
                         const song = {
@@ -2158,7 +2144,9 @@ client.on('message', async function (message) {
                     var args = await message.content.split(" ").slice(1).join(" ")
                     if (!message.member.voice.channel) return await message.channel.send("You need to be in a VC to do that.");
                     if (!serverQueue) return await message.channel.send("There is nothing playing!");
-                    await message.channel.send(`**__Queue__**\n${serverQueue.songs.map(song => ` -${song.title}\n`).join("")}\nNow Playing: **${serverQueue.songs[0].title}**`, {split:false})
+                    await message.channel.send(`**__Queue__**\n${serverQueue.songs.map(song => ` -${song.title}\n`).join("")}\nNow Playing: **${serverQueue.songs[0].title}**`, {
+                        split: false
+                    })
                 }
                 if (isValidCommand(message, "pause")) {
                     var args = await message.content.split(" ").slice(1).join(" ")
