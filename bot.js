@@ -1767,6 +1767,9 @@ client.on('message', async function (message) {
                         if (MemberData[i].GuildId === '671494359056646176') {
                             guild = "Land of Sweets 18+";
                         }
+                        if (MemberData[i].GuildId === '834857491418447945') {
+                            guild = "Heavan & Hell";
+                        }
 
                         if (MemberData[i].InfractionType === 1) {
                             await embed.setDescription(`Infractions for <@!${await normaliseID(args[0])}>`);
@@ -1805,6 +1808,9 @@ client.on('message', async function (message) {
                         }
                         if (MemberData[i].GuildId === '671494359056646176') {
                             guild = "Land of Sweets 18+";
+                        }
+                        if (MemberData[i].GuildId === '834857491418447945') {
+                            guild = "Heavan & Hell";
                         }
 
                         if (MemberData[i].InfractionType === 1) {
