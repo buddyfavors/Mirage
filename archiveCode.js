@@ -53,3 +53,105 @@
             }
         }
     });
+
+
+    try {
+        //Ticketing
+        if (isValidCommand(message, "ticket")) {
+            let args = await message.content.toLowerCase().split(" ").slice(1);
+            if (args[0] === "open") {
+                await tickets["ticketid"].value++;
+                await writedata();
+                args = await args.slice(1).join(" ");
+                await message.guild.channels.create(`Ticket ${tickets["ticketid"].value} ${args}`, {
+                        parent: message.guild.channels.cache.find(chan => chan.name === "Tickets")
+                    })
+                    .then(async chan => {
+                        await message.channel.send(`Ticket created in ${chan}`)
+                            .then(async msg => {
+                                await message.delete();
+                                await msg.delete({
+                                    timeout: 5000
+                                });
+
+                            })
+                    })
+                    .catch(async error => {
+                        await console.log(error);
+                    });
+                await fs.appendFileSync(`/storage/ticket-${tickets["ticketid"].value}-${args.replace(" ", "-")}.txt`, `${args}\n`);
+            }
+            if (args[0] === "close") {
+                if (message.channel.name.startsWith("ticket")) {
+                    await message.channel.send("Ticket closing, saving logs!");
+                    await wait(700);
+                    await message.channel.delete();
+                    var logchannel = await message.guild.channels.cache.get("787303632722460702");
+                    await logchannel.send({
+                        files: [`storage/${message.channel.name}.txt`]
+                    });
+                }
+            }
+        }
+
+        //Ticket logging
+        if (message.channel.name.startsWith("ticket") && message.channel.name != "ticket-logs") {
+            await fs.appendFileSync(`storage/${message.channel.name}.txt`, `${message.author.username}#${message.author.discriminator} @ ${message.createdAt.substring(3, 25)}: ${message.content}\n\n`);
+        }
+    } catch (err) {
+        message.channel.send("Something went wrong, please open a ticket and ask skye to look into it!");
+        console.log(err);
+    }
+
+
+
+
+
+var tickets = JSON.parse(fs.readFileSync('storage/tickets.json', 'utf-8'));
+
+
+
+else if (isValidCommand(message, "bratadd") && UserData[message.author.id].bpgiven === 1) {
+    await message.channel.send("You are on cooldown! Please try again in a few hours (Note: Cooldown is 12 hours between point issues)")
+}
+
+
+
+                // //+bratboard
+                // if(isValidCommand(message, "bratboard")){
+                //     var embed = new MessageEmbed()
+                //     .setTitle("Brat Board");
+                //     var firstbratpoints = 0;
+                //     var secondbratpoints = 0;
+                //     var thirdbratpoints = 0;
+                //     UserData.forEach(user => {
+                //         if (user.bratPoints > firstbratpoints){
+
+                //         }
+                //     });
+                // }
+
+
+
+                                //+init
+                                if (isValidCommand(message, "init")) {
+                                    await message.delete();
+                                    await message.guild.members.cache.forEach(member => {
+                                        if (!UserData[member.id]) {
+                                            UserData[member.id] = {
+                                                credits: 0,
+                                                bratPoints: 0
+                                            }
+                                        }
+                                    });
+                                    await message.channel.send("Server data initialised in database. All members who were not in file are now in.");
+                                    let announce = await message.guild.channels.cache.find(x => x.name.includes("announcements"));
+                                    await announce.send("Booting Mirage... 0%").then(async msg => {
+                                        for (var i = 0; i < 100; i++) {
+                                            await wait(50);
+                                            await msg.edit(`Booting Mirage... ${i}%`);
+                                        }
+                                        let role = await message.guild.roles.cache.find(x => x.name === "verified");
+                                        await msg.edit(`Huh? Where am I? What is this wonderful yet mysterious place? Is that.. I see... people? *gasps* there are people here!! *squeals with excitement!!* I love people!! They are so fun to play with!! Hi ${role} I’m Mirage or Mira for short... I’m here to have all sorts of fun with you.`)
+                                    })
+                                }

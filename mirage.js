@@ -19,6 +19,8 @@ const yts = require("yt-search");
 const db = require('./database/database');
 const verification = require('./models/VerificationModel');
 const infracs = require('./models/InfracModel');
+const userData = require('./models/UserModel');
+
 
 //Global Variables
 const prefix = "+"; //defines prefix for the bot
@@ -27,11 +29,8 @@ var FreeMoney = 0;
 var randomBonus = Math.floor(Math.random() * 75) + 75;
 
 //File storage
-var UserData = JSON.parse(fs.readFileSync('storage/userData.json', 'utf8'));
-var tickets = JSON.parse(fs.readFileSync('storage/tickets.json', 'utf-8'));
 var punishments = JSON.parse(fs.readFileSync('storage/punishments.json', 'utf-8'));
 var games = JSON.parse(fs.readFileSync('storage/games.json', 'utf-8'));
-var birthdaysData = JSON.parse(fs.readFileSync('storage/birthdays.json', 'utf8'));
 
 
 //Run initial setup when client is ready
@@ -49,6 +48,8 @@ client.on('ready', async () => {
         await verification.sync();
         await infracs.init(db);
         await infracs.sync();
+        await userData.init(db);
+        await userData.sync();
     } catch (err) {
         await console.log(err)
     };
@@ -70,6 +71,7 @@ client.on('ready', async () => {
         });
     }, 86400000);
 
+
     //Birthdays
     let rule = new schedule.RecurrenceRule();
     rule.dayOfWeek = [0, 1, 2, 3, 4, 5, 6];
@@ -77,39 +79,36 @@ client.on('ready', async () => {
     rule.minute = 0;
 
     let birthdays = await schedule.scheduleJob(rule, async function () {
-        birthdaysData = await JSON.parse(fs.readFileSync('storage/birthdays.json', 'utf8'));
-        var members = Object.keys(birthdaysData);
-        var todaysbirths = {};
-        var length = Object.keys(birthdaysData).length;
+        //Get Current Date
         var todayDD = Date().toString().split(" ").slice(2, 3).join(" ");
         var todayMM = Date().toString().split(" ").slice(1, 2).join(" ");
         switch (todayMM) {
             case "Jan":
-                todayMM = "1";
+                todayMM = "01";
                 break;
             case "Feb":
-                todayMM = "2";
+                todayMM = "02";
                 break;
             case "Mar":
-                todayMM = "3";
+                todayMM = "03";
                 break;
             case "Apr":
-                todayMM = "4";
+                todayMM = "04";
                 break;
             case "May":
-                todayMM = "5";
+                todayMM = "05";
                 break;
             case "Jun":
-                todayMM = "6";
+                todayMM = "06";
                 break;
             case "Jul":
-                todayMM = "7";
+                todayMM = "07";
                 break;
             case "Aug":
-                todayMM = "8";
+                todayMM = "08";
                 break;
             case "Sep":
-                todayMM = "9";
+                todayMM = "09";
                 break;
             case "Oct":
                 todayMM = "10";
@@ -121,21 +120,35 @@ client.on('ready', async () => {
                 todayMM = "12";
                 break;
         }
-        var i = 0
-        var announce = ":tada:Todays Birthdays are:\n\n";
-        await members.forEach(member => {
-            if ((birthdaysData[member.replace("\"", "")].birthdate === `${todayDD}/${todayMM}`) || (birthdaysData[member.replace("\"", "")].birthdate === `0${todayDD}/0${todayMM}`) || (birthdaysData[member.replace("\"", "")].birthdate === `${todayDD}/0${todayMM}`) || (birthdaysData[member.replace("\"", "")].birthdate === `0${todayDD}/${todayMM}`)) {
-                todaysbirths[i] = member;
-                i++
-                announce = announce + `${client.users.cache.get(member.replace("\"", ""))}\n`;
+        var today = `${todayDD}/${todayMM}`;
+
+        //Database Link
+        let birthdaysCount = await userData.findAndCountAll({
+            where: {
+                Birthday: today,
+                BirthdayAnnounce: "y",
+                GuildId: "715701127181631527"
             }
         });
-        if (Object.keys(todaysbirths).length === 0) {
-            return;
-        } else {
-            client.channels.cache.get("715711014057934888").send(announce + "\n:cake:We here at Night visions wish them a happy birthday! :cake:");
+        if (birthdaysCount.count === 0) return;
+        let birthdaysData = await userData.findAll({
+            raw: true,
+            where: {
+                Birthday: today,
+                BirthdayAnnounce: "y",
+                GuildId: "715701127181631527"
+            }
+        });
+        birthdaysData = await JSON.parse(await JSON.stringify(birthdaysData));
+
+        //Make the announcements
+        var announce = ":tada:Todays Birthdays are:\n\n";
+        for (i = 0; i < birthdaysData.length; i++) {
+            announce = announce + `${await client.guilds.cache.get("715701127181631527").members.cache.get(birthdaysData[i].UserId)}\n`;
         }
+        client.channels.cache.get("715711014057934888").send(announce + "\n:cake:We here at Night Visions wish them a happy birthday! :cake:");
     });
+
 
     //NHIE
     {
@@ -445,85 +458,121 @@ client.on('message', async function (message) {
                     await message.delete();
                     await FreeMoney--;
                     MessageCount = 0;
-                    if (!UserData[message.author.id]) {
-                        UserData[message.author.id] = {
-                            credits: 30,
-                            bratPoints: 0
-                        };
-                        await message.channel.send(`${message.author} Collected 30 Credits`)
-                            .then(async msg => {
-                                await msg.delete({
-                                    timeout: 10000
-                                });
-                            });
-                        await writedata();
-                        return;
+                    let memberData = await userData.findAll({
+                        raw: true,
+                        where: {
+                            UserId: message.author.id,
+                            GuildId: message.guild.id
+                        }
+                    });
+                    if (memberData.length === 0) {
+                        await userData.create({
+                            GuildId: message.guild.id,
+                            userId: message.author.id,
+                            Credits: 30
+                        })
+                    } else {
+                        await userData.update({
+                            GuildId: message.guild.id,
+                            userId: message.author.id,
+                            Credits: memberData[0].Credits + 30
+                        })
                     }
-                    var oldcreds = parseInt(UserData[message.author.id].credits);
-                    var newcreds = oldcreds + 30;
-                    UserData[message.author.id].credits = newcreds;
-                    await writedata();
                     await message.channel.send(`${message.author} Collected 30 Credits`)
                         .then(async msg => {
                             await msg.delete({
                                 timeout: 10000
                             });
                         });
+                    return;
                 }
 
                 //+bal
                 if (isValidCommand(message, "bal")) {
-                    await message.delete();
-                    if (!UserData[message.author.id]) {
-                        await message.channel.send("You do not have any credits!");
-                        UserData[message.author.id] = {
-                            credits: 0,
-                            bratPoints: 0
+                    let memberData = await userData.findAll({
+                        raw: true,
+                        where: {
+                            UserId: message.author.id,
+                            GuildId: message.guild.id
                         }
-                        await writedata();
-                    } else if (UserData[message.author.id].credits === 0) {
+                    });
+                    if (memberData.length === 0) {
                         await message.channel.send("You do not have any credits!");
-                    } else if (UserData[message.author.id]) {
-                        await message.channel.send(`${message.author} has ${UserData[message.author.id].credits} Credits left!`);
+                    } else if (memberData[0].Credits === 0) {
+                        await message.channel.send("You do not have any credits!");
+                    } else {
+                        await message.channel.send(`You have ${memberData[0].Credits} Credits left!`);
+
                     }
                 }
 
                 //+give
-                try {
-                    if (isValidCommand(message, "give") && !message.content.startsWith === "+givecredits") {
-                        message.delete();
-                        if (!UserData[message.author.id]) {
-                            await message.channel.send("You do not have any credits!");
-                            UserData[message.author.id] = {
-                                credits: 0,
-                                bratPoints: 0
-                            }
-                            await writedata();
+                if (message.content.toLowerCase().startsWith("+give")) {
+                    message.delete();
+                    let args = await message.content.split(" ");
+                    if (message.mentions.members.size === 0) return await message.channel.send("No member has been mentioned");
+                    let memberReceiver = await message.mentions.members.first();
+                    let memberDataGiver = await userData.findAll({
+                        raw: true,
+                        where: {
+                            UserId: message.author.id,
+                            GuildId: message.guild.id
                         }
-                        let args = await message.content.split(" ");
-                        let member = await message.mentions.members.first();
-                        let credstogive = args[2];
-                        if (UserData[message.author.id].credits < credstogive) {
-                            await message.channel.send("Whoa! You dont have enough credits left to give!");
-                            return;
+                    });
+                    let memberDataReceiver = await userData.findAll({
+                        raw: true,
+                        where: {
+                            UserId: memberReceiver.id,
+                            GuildId: message.guild.id
                         }
-                        UserData[message.author.id].credits -= credstogive;
-                        if (!UserData[member.id]) {
-                            UserData[member.id] = {
-                                credits: credstogive,
-                                bratPoints: 0
-                            }
-                            await writedata();
-                        } else {
-                            UserData[member.id].credits += credstogive;
-                        }
-                        await message.channel.send(`${message.author} has given ${member} ${credstogive} credits! How generous!`);
-                    }
-                } catch {
-                    await message.channel.send("Something went wrong, did you Ping a user or enter a numerical amount of credits to give?\nCommand Syntax: +give @user 12");
-                }
+                    });
+                    let credstogive = args[2];
 
+                    if (memberDataGiver.length === 0) {
+                        await message.channel.send("You do not have any credits!");
+                        return;
+                    } else if (memberDataGiver[0].Credits < credstogive) {
+                        await message.channel.send("Whoa! You dont have enough credits left to give!");
+                        return;
+                    } else if (memberDataReceiver.length === 0) {
+                        await userData.update({
+                            Credits: MemberDataGiver[0].Credits - credstogive
+                        }, {
+                            where: {
+                                UserId: message.author.id,
+                                GuildId: message.guild.id
+                            }
+                        });
+                        await userData.create({
+                            Credits: credstogive,
+                            userId: memberReceiver.id,
+                            GuildId: message.guild.id
+                        });
+                        await message.channel.send(`${message.author} has given ${memberReceiver} ${credstogive} credits! How generous!`);
+
+                    } else {
+                        await userData.update({
+                            Credits: memberDataGiver[0].Credits - credstogive
+                        }, {
+                            where: {
+                                UserId: message.author.id,
+                                GuildId: message.guild.id
+                            }
+                        });
+                        await userData.update({
+                            Credits: memberDataReceiver[0].Credits + credstogive
+                        }, {
+                            where: {
+                                UserId: memberReceiver.id,
+                                GuildId: message.guild.id
+                            }
+                        });
+                        await message.channel.send(`${message.author} has given ${memberReceiver} ${credstogive} credits! How generous!`);
+
+                    }
+                }
             }
+
 
             //Emotes
             if (message.channel.id === "752267223007232020" && message.content.startsWith(`+`) && !message.content.startsWith("+help")) {
@@ -800,6 +849,7 @@ client.on('message', async function (message) {
                 }
             }
 
+
             //Memes
             {
                 //2+2=22
@@ -808,27 +858,51 @@ client.on('message', async function (message) {
                 }
             }
 
+
             //Brat Based Commands
             {
                 //+bratadd @user
-                if (isValidCommand(message, "bratadd") && UserData[message.author.id].bpgiven === 0) {
+                if (isValidCommand(message, "bratadd")) {
                     try {
                         var args = message.content.split(' ').slice(1);
                         let member = await message.guild.members.cache.get(await normaliseID(args[0]));
+
+                        let memberDataCall = await userData.findAll({
+                            raw: true,
+                            where: {
+                                UserId: message.author.id,
+                                GuildId: message.guild.id
+                            }
+                        });
+                        let memberDataReceive = await userData.findAll({
+                            raw: true,
+                            where: {
+                                UserId: member.id,
+                                GuildId: message.guild.id
+                            }
+                        });
                         if (await message.guild.members.cache.get(message.author.id).roles.cache.find(role => role.name === "Dom") || await AuthorRoleCache.find(role => role.name === "Switch")) {
                             //If the mentioned member is not a dom
                             if (!await member.roles.cache.find(role => role.name === "Dom")) {
-                                //If the member does not yet exist in the data struct
-                                if (!UserData[member.id]) UserData[member.id] = {
-                                    credits: 0,
-                                    bratPoints: 0,
-                                    bpgiven: 0
+
+                                if (memberDataReceive.length === 0) {
+                                    await userData.create({
+                                        UserId: member.id,
+                                        GuildId: message.guild.id,
+                                        BratPoints: 1
+                                    })
+                                } else {
+                                    await userData.update({
+                                        BratPoints: 1
+                                    }, {
+                                        where: {
+                                            UserId: member.id,
+                                            GuildId: message.guild.id
+                                        }
+                                    });
                                 }
-                                //then add 1 brat point
-                                await UserData[member.id].bratPoints++;
-                                await writedata();
-                                await message.channel.send(`Oh Dear! ${member} has been a brat and earnt themselves a brat point! They are now on ${UserData[member.id].bratPoints} Brat Points!`);
-                                var points = UserData[member.id].bratPoints;
+                                await message.channel.send(`Oh Dear! ${member} has been a brat and earnt themselves a brat point! They are now on ${memberDataReceive[0].BratPoints} Brat Points!`);
+                                var points = memberDataReceive[0].BratPoints;
                                 var multipleoffive = points % 5;
                                 if (multipleoffive === 0) {
                                     random = Math.floor(Math.random() * (4 - 1 + 1) + 1);
@@ -838,39 +912,53 @@ client.on('message', async function (message) {
                                 await message.channel.send("Hey! Im not gonna give a dom brat points!");
                             }
                         } else {
-                            await UserData[message.author.id].bratPoints++;
-                            await writedata();
+                            if (memberDataCall.length === 0) {
+                                await userData.create({
+                                    UserId: message.author.id,
+                                    GuildId: message.guild.id,
+                                    BratPoints: 1
+                                })
+                            } else {
+                                await userData.update({
+                                    BratPoints: memberDataCall[0].BratPoints + 1
+                                }, {
+                                    where: {
+                                        UserId: message.author.id,
+                                        GuildId: message.guild.id
+                                    }
+                                });
+                            }
                             await message.channel.send(`${message.author} tried to give someone brat points however since they aren't a dom, I gave them a brat point instead! I hope this teaches you a lesson!`)
-                            var points = UserData[message.author.id].bratPoints;
+                            var points = memberDataCall[0].BratPoints;
                             var multipleoffive = points % 5;
                             if (multipleoffive === 0) {
                                 var random = Math.floor(Math.random() * (4 - 1 + 1) + 1);
                                 message.channel.send(punishments[`${random}`].punishment);
                             }
                         }
-                        await UserData[message.author.id].bpgiven++;
-                        await writedata();
-                        await setTimeout(async () => {
-                            await UserData[message.author.id].bpgiven--;
-                            await writedata();
-                        }, 43200000);
                     } catch (err) {
                         await client.users.cache.get("577539199708823573").send(`+bratadd in ${message.channel} from ${message.author} did not work with error: `, err);
                     }
 
-                } else if (isValidCommand(message, "bratadd") && UserData[message.author.id].bpgiven === 1) {
-                    await message.channel.send("You are on cooldown! Please try again in a few hours (Note: Cooldown is 12 hours between point issues)")
                 }
 
                 //+bp
                 if (isValidCommand(message, "bp")) {
                     let cache = message.guild.members.cache.get(message.author.id).roles.cache;
-                    if (await cache.some(role => role.name === "Sub") || await cache.some(role => role.name === "Switch") && await UserData[message.author.id]) {
-                        if (UserData[message.author.id].bratPoints === 0) {
-                            await message.channel.send(`You have ${UserData[message.author.id].bratPoints} Brat Points. Good Job!`);
-
+                    let memberData = await userData.findAll({
+                        raw: true,
+                        where: {
+                            UserId: message.author.id,
+                            GuildId: message.guild.id
+                        }
+                    });
+                    if (await cache.some(role => role.name === "Sub") || await cache.some(role => role.name === "Switch")) {
+                        if (memberData.length === 0) {
+                            await message.channel.send(`You have 0 Brat Points. Good Job!`);
+                        } else if (memberData[0].BratPoints === 0) {
+                            await message.channel.send(`You have 0 Brat Points. Good Job!`);
                         } else {
-                            await message.channel.send(`You have ${UserData[message.author.id].bratPoints} Brat Points. Very naughty.`);
+                            await message.channel.send(`You have ${memberData[0].BratPoints} Brat Points. Very naughty.`);
                         }
                     } else if (await cache.find(role => role.name == "Dom")) {
                         await message.channel.send("You are a dom and hence are immune to brat points! Thats great news!")
@@ -878,29 +966,31 @@ client.on('message', async function (message) {
                         await message.channel.send("You do not have any brat points. Or a Dom, sub or switch role! Lucky you! I'm sure we can change that though...")
                     }
                 }
-
-                // //+bratboard
-                // if(isValidCommand(message, "bratboard")){
-                //     var embed = new MessageEmbed()
-                //     .setTitle("Brat Board");
-                //     var firstbratpoints = 0;
-                //     var secondbratpoints = 0;
-                //     var thirdbratpoints = 0;
-                //     UserData.forEach(user => {
-                //         if (user.bratPoints > firstbratpoints){
-
-                //         }
-                //     });
-                // }
             }
+
 
             //Games
             {
                 //+slots - Fixed dual reel only spin
                 if (isValidCommand(message, "slots") && message.channel.id === "715768048099000333") {
-                    if (UserData[message.author.id].credits >= 10) {
+                    let memberData = await userData.findAll({
+                        raw: true,
+                        where: {
+                            UserId: message.author.id,
+                            GuildId: message.guild.id
+                        }
+                    });
+                    if (memberData.length === 0) return await message.channel.send("Your card got declined due to insufficient funds!");
+                    if (memberData[0].Credits >= 10) {
                         var slots = ["<:slot1:789229982580342885>", "<:Jackpot:789229982944591872>", "<:slot2:789229982941184080>"];
-                        UserData[message.author.id].credits -= 10;
+                        await userData.update({
+                            Credits: memberData[0].Credits - 10
+                        }, {
+                            where: {
+                                UserId: message.author.id,
+                                GuildId: message.guild.id
+                            }
+                        })
                         for (var i = 0; i <= 3; i++) {
                             random = await Math.floor((Math.random() * (512 - 1 + 1)) / 4);
                             switch (random) {
@@ -1292,42 +1382,50 @@ client.on('message', async function (message) {
                         }
                         await message.channel.send(`${message.author}\n:white_large_square: ${slots[0]} ${slots[1]} ${slots[2]} :white_large_square:`);
                         if (slots[0] === slots[1] && slots[0] === slots[2]) {
+                            var credsToAdd;
                             switch (slots[0]) {
                                 case "<:Jackpot:789229982944591872>":
-                                    UserData[message.author.id].credits += 500;
+                                    credsToAdd += 500;
                                     await message.channel.send("Congratulations you won the Jackpot of 500 credits!!");
                                     break;
                                 case "<:slot1:789229982580342885>":
-                                    UserData[message.author.id].credits += 37;
+                                    credsToAdd += 37;
                                     await message.channel.send("Congratulations you won 37 credits!!");
                                     break;
                                 case "<:slot2:789229982941184080>":
-                                    UserData[message.author.id].credits += 46;
+                                    credsToAdd += 46;
                                     await message.channel.send("Congratulations you won 46 credits!!");
                                     break;
                                 case "<:slot3:789229983067275264>":
-                                    UserData[message.author.id].credits += 22;
+                                    credsToAdd += 22;
                                     await message.channel.send("Congratulations you won 22 credits!!");
                                     break;
                                 case "<:slot4:789229982596595725>":
-                                    UserData[message.author.id].credits += 38;
+                                    credsToAdd += 38;
                                     await message.channel.send("Congratulations you won 38 credits!!");
                                     break;
                                 case "<:slot5:789229982982340668>":
-                                    UserData[message.author.id].credits += 10;
+                                    credsToAdd += 10;
                                     await message.channel.send("Congratulations you won 10 credits!!");
                                     break;
                                 case "<:slot6:789229983113019423>":
-                                    UserData[message.author.id].credits += 50;
+                                    credsToAdd += 50;
                                     await message.channel.send("Congratulations you won 50 credits!!");
                                     break;
                                 case "<:slot7:789229983368609823>":
-                                    UserData[message.author.id].credits += 45;
+                                    credsToAdd += 45;
                                     await message.channel.send("Congratulations you won 45 credits!!");
                                     break;
                             }
+                            await userData.update({
+                                Credits: memberData[0].Credits + credsToAdd
+                            }, {
+                                where: {
+                                    UserId: message.author.id,
+                                    GuildId: message.guild.id
+                                }
+                            })
                         }
-                        await writedata();
                     } else {
                         await message.channel.send("Your card got declined! Either the machine is broken or you are out of credits");
                     }
@@ -1352,26 +1450,51 @@ client.on('message', async function (message) {
                 }
             }
 
+
             //Server Currency
             {
-                if (AuthorRoleCache.find(x => x.name === "unverified")) return;
-                if (!UserData[message.author.id]) {
-                    UserData[message.author.id] = {
-                        credits: 1,
-                        bratPoints: 0
+                if (message.channel.id != "715768048099000333" && message.channel.id != "752266774426288178" && message.channel.id != "772154353783537704" && message.channel.id != "" && message.channel.id != "752267223007232020" && message.channel.parentID != "715979876208869388" && message.channel.parentID != "716001281931739217" && message.channel.parentID != "755842840587796651") {
+                    if (AuthorRoleCache.find(x => x.name === "unverified")) return;
+                    let memberData = await userData.findAll({
+                        raw: true,
+                        logging: false,
+                        where: {
+                            UserId: message.author.id,
+                            GuildId: message.guild.id
+                        }
+                    });
+                    if (memberData.length === 0) {
+                        await userData.create({
+                            GuildId: message.guild.id,
+                            userId: message.author.id,
+                            Credits: 1
+                        }, {
+                            logging: false
+                        })
+                    } else {
+                        await userData.update({
+                            Credits: memberData[0].Credits + 1
+                        }, {
+                            logging: false,
+                            where: {
+                                GuildId: message.guild.id,
+                                userId: message.author.id,
+                            }
+                        })
                     }
-                    await writedata();
-                    return
-                } else if (!message.content.startsWith("+")) {
-                    var oldCreds = UserData[message.author.id].credits;
-                    var newCreds = oldCreds + 1;
-                    UserData[message.author.id].credits = newCreds;
-                    await writedata();
                 }
 
                 //+buy
                 {
                     if (isValidCommand(message, "buy")) {
+                        let memberData = await userData.findAll({
+                            raw: true,
+                            where: {
+                                UserId: message.author.id,
+                                GuildId: message.guild.id
+                            }
+                        });
+                        var credsForPurchase = 0;
                         var args = await message.content.split(" ").slice(1).join(" ");
                         if (!args.length) {
                             var embed = await new MessageEmbed()
@@ -1380,11 +1503,12 @@ client.on('message', async function (message) {
                                 .addField("Usage", "+buy I Talk way too much")
                                 .setColor("#f000ff");
                             await message.channel.send(embed);
+                            return;
                         }
 
                         if (args.toLowerCase() === "succubus" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879619928981545")) {
-                            if (UserData[message.author.id].credits >= 2000) {
-                                UserData[message.author.id].credits -= 2000;
+                            if (memberData[0].Credits >= 2000) {
+                                credsForPurchase = 2000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879619928981545"));
                                 await message.reply("You successfully brought \"Succubus\"!");
                             } else {
@@ -1393,8 +1517,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "nude gods" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879623620493322")) {
-                            if (UserData[message.author.id].credits >= 800) {
-                                UserData[message.author.id].credits -= 800;
+                            if (memberData[0].Credits >= 800) {
+                                credsForPurchase = 800;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879623620493322"));
                                 await message.reply("You successfully brought \"Nude Gods\"!");
                             } else {
@@ -1403,8 +1527,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "nude goddesses" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879623658111016")) {
-                            if (UserData[message.author.id].credits >= 800) {
-                                UserData[message.author.id].credits -= 800;
+                            if (memberData[0].Credits >= 800) {
+                                credsForPurchase = 800;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879623658111016"));
                                 await message.reply("You successfully brought \"Nude Goddesses\"!");
                             } else {
@@ -1413,8 +1537,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "thicc thighs save lives" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879623733215302")) {
-                            if (UserData[message.author.id].credits >= 3000) {
-                                UserData[message.author.id].credits -= 3000;
+                            if (memberData[0].Credits >= 3000) {
+                                credsForPurchase = 3000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879623733215302"));
                                 await message.reply("You successfully brought \"Thicc Thighs Save Lives\"!");
                             } else {
@@ -1423,8 +1547,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "slytherin" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("814110158774599712 ")) {
-                            if (UserData[message.author.id].credits >= 5000) {
-                                UserData[message.author.id].credits -= 5000;
+                            if (memberData[0].Credits >= 5000) {
+                                credsForPurchase = 5000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("814110158774599712 "));
                                 //Webhook
                                 const guild = client.guilds.cache.get(message.guild.id);
@@ -1441,8 +1565,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "gryffindor" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("814111266717171762")) {
-                            if (UserData[message.author.id].credits >= 5000) {
-                                UserData[message.author.id].credits -= 5000;
+                            if (memberData[0].Credits >= 5000) {
+                                credsForPurchase = 5000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("814111266717171762"));
                                 //Webhook
                                 const guild = client.guilds.cache.get(message.guild.id);
@@ -1459,8 +1583,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "hufflepuff" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("814110519609786389")) {
-                            if (UserData[message.author.id].credits >= 5000) {
-                                UserData[message.author.id].credits -= 5000;
+                            if (memberData[0].Credits >= 5000) {
+                                credsForPurchase = 5000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("814110519609786389"));
                                 //Webhook
                                 const guild = client.guilds.cache.get(message.guild.id);
@@ -1477,8 +1601,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "ravenclaw" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("814111644556066856")) {
-                            if (UserData[message.author.id].credits >= 5000) {
-                                UserData[message.author.id].credits -= 5000;
+                            if (memberData[0].Credits >= 5000) {
+                                credsForPurchase = 5000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("814111644556066856"));
                                 //Webhook
                                 const guild = client.guilds.cache.get(message.guild.id);
@@ -1495,8 +1619,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "itty bitty titty committee" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879627122212875")) {
-                            if (UserData[message.author.id].credits >= 1000) {
-                                UserData[message.author.id].credits -= 1000;
+                            if (memberData[0].Credits >= 1000) {
+                                credsForPurchase = 1000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879627122212875"));
                                 await message.reply("You successfully brought \"Itty Bitty Titty Committee\"! Welcome to the club!");
                             } else {
@@ -1505,8 +1629,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "cutie" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879627173330965")) {
-                            if (UserData[message.author.id].credits >= 500) {
-                                UserData[message.author.id].credits -= 500;
+                            if (memberData[0].Credits >= 500) {
+                                credsForPurchase = 500;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879627173330965"));
                                 await message.reply("You successfully brought \"Cutie\"!");
                             } else {
@@ -1515,8 +1639,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "titty lover" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879637218689024")) {
-                            if (UserData[message.author.id].credits >= 600) {
-                                UserData[message.author.id].credits -= 600;
+                            if (memberData[0].Credits >= 600) {
+                                credsForPurchase = 600;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879637218689024"));
                                 await message.reply("You successfully brought \"Titty Lover\"!");
                             } else {
@@ -1525,8 +1649,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "nymphomaniac" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879627496554496")) {
-                            if (UserData[message.author.id].credits >= 6000) {
-                                UserData[message.author.id].credits -= 6000;
+                            if (memberData[0].Credits >= 6000) {
+                                credsForPurchase = 6000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879627496554496"));
                                 await message.reply("You successfully brought \"Nymphomaniac\"! What does that mean..? Hey Google!");
                             } else {
@@ -1535,8 +1659,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "anti social" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879630030045246")) {
-                            if (UserData[message.author.id].credits >= 2000) {
-                                UserData[message.author.id].credits -= 2000;
+                            if (memberData[0].Credits >= 2000) {
+                                credsForPurchase = 2000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879630030045246"));
                                 await message.reply("\*silence\* (You got it)");
                             } else {
@@ -1545,8 +1669,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "i talk way too much" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879630465204264")) {
-                            if (UserData[message.author.id].credits >= 10000) {
-                                UserData[message.author.id].credits -= 10000;
+                            if (memberData[0].Credits >= 10000) {
+                                credsForPurchase = 10000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879630465204264"));
                                 await message.reply("Yes you do. Also, You successfully brought \"I talk wayyyyy too much\"!");
                             } else {
@@ -1555,8 +1679,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "dc" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879630553940018")) {
-                            if (UserData[message.author.id].credits >= 900) {
-                                UserData[message.author.id].credits -= 900;
+                            if (memberData[0].Credits >= 900) {
+                                credsForPurchase = 900;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879630553940018"));
                                 await message.reply("You successfully brought \"DC\"!");
                             } else {
@@ -1565,8 +1689,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "marvel" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879633376837662")) {
-                            if (UserData[message.author.id].credits >= 900) {
-                                UserData[message.author.id].credits -= 900;
+                            if (memberData[0].Credits >= 900) {
+                                credsForPurchase = 900;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879633376837662"));
                                 await message.reply("You successfully brought \"Marvel\"!");
                             } else {
@@ -1575,8 +1699,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "heroes" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879633413799936")) {
-                            if (UserData[message.author.id].credits >= 900) {
-                                UserData[message.author.id].credits -= 900;
+                            if (memberData[0].Credits >= 900) {
+                                credsForPurchase = 900;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879633413799936"));
                                 await message.reply("You successfully brought \"heroes\"!");
                             } else {
@@ -1585,8 +1709,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "villains" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879633439752212")) {
-                            if (UserData[message.author.id].credits >= 900) {
-                                UserData[message.author.id].credits -= 900;
+                            if (memberData[0].Credits >= 900) {
+                                credsForPurchase = 900;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879633439752212"));
                                 await message.reply("You successfully brought \"Villains\"!");
                             } else {
@@ -1595,8 +1719,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "dark humour room" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879637160099871")) {
-                            if (UserData[message.author.id].credits >= 3000) {
-                                UserData[message.author.id].credits -= 3000;
+                            if (memberData[0].Credits >= 3000) {
+                                credsForPurchase = 3000;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879637160099871"));
                                 await message.reply("You successfully brought access to the dark humour room!");
                             } else {
@@ -1605,8 +1729,8 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "ass lover" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("821879637205975051")) {
-                            if (UserData[message.author.id].credits >= 600) {
-                                UserData[message.author.id].credits -= 600;
+                            if (memberData[0].Credits >= 600) {
+                                credsForPurchase = 600;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("821879637205975051"));
                                 await message.reply("You successfully brought \"Ass Lovers\"!");
                             } else {
@@ -1615,24 +1739,34 @@ client.on('message', async function (message) {
                         }
 
                         if (args.toLowerCase() === "feet" && !await message.guild.members.cache.get(message.author.id).roles.cache.get("814110125417037844")) {
-                            if (UserData[message.author.id].credits >= 500) {
-                                UserData[message.author.id].credits -= 500;
+                            if (memberData[0].Credits >= 500) {
+                                credsForPurchase = 500;
                                 await message.guild.members.cache.get(message.author.id).roles.add(await message.guild.roles.cache.get("814110125417037844"));
                                 await message.reply("You successfully brought \"feet\"!");
                             } else {
                                 await message.reply("You don't have enough credits!");
                             }
                         }
-
+                        var newCreds = parseInt(memberData[0].Credits)-parseInt(credsForPurchase)
+                        await userData.update({
+                            Credits: memberData[0].Credits - credsForPurchase
+                        }, {
+                            where: {
+                                UserId: message.author.id,
+                                GuildId: message.guild.id
+                            }
+                        });
                     }
+
                 }
             }
+
 
             //Moderation
             if (await AuthorRoleCache.get("804129560840896562") || message.author.id === "577539199708823573") {
                 let args = message.content.split(' ').slice(1);
 
-                //+promote <userid> <role>
+                //+promote <userid> <role> - NON FUCNTIONING
                 if (message.author.id === "577539199708823573" && isValidCommand(message, "promote")) {
                     let args = await message.content.split(" ").slice(1)
                     var user = await client.users.cache.get(args[0]);
@@ -1732,8 +1866,17 @@ client.on('message', async function (message) {
                             Infraction: reason,
                             InfractionType: "2"
                         });
+                        var embed = new MessageEmbed()
+                            .setTitle("Member Warned")
+                            .addField('Member', member)
+                            .addField('ID', member.id)
+                            .addField('Warned By', message.author)
+                            .addField('Guild', message.guild.name)
+                            .setColor('#FFA500')
+                            .addField('Reason', reason);
                         await member.send(`⚠️You have been warned for ${reason}⚠️`);
                         await message.channel.send("I have successfully added that to the log file!")
+                        await client.channels.cache.get("787269475165929474").send(embed);
                     } catch (error) {
                         await console.log("An error occured whilst adding data to DB");
                         await message.channel.send("An error occured whilst adding that");
@@ -1843,7 +1986,7 @@ client.on('message', async function (message) {
                     }
                 }
 
-                //+whois @user
+                //+whois @user - NON FUNCTIONING
                 if (isValidCommand(message, "whois")) {
                     let user = await message.guild.members.cache.get(await normaliseID(args[0]));
                     var embed = new MessageEmbed()
@@ -1941,66 +2084,64 @@ client.on('message', async function (message) {
                     }
                 }
 
-                //+init
-                if (isValidCommand(message, "init")) {
-                    await message.delete();
-                    await message.guild.members.cache.forEach(member => {
-                        if (!UserData[member.id]) {
-                            UserData[member.id] = {
-                                credits: 0,
-                                bratPoints: 0
-                            }
-                        }
-                    });
-                    await message.channel.send("Server data initialised in database. All members who were not in file are now in.");
-                    let announce = await message.guild.channels.cache.find(x => x.name.includes("announcements"));
-                    await announce.send("Booting Mirage... 0%").then(async msg => {
-                        for (var i = 0; i < 100; i++) {
-                            await wait(50);
-                            await msg.edit(`Booting Mirage... ${i}%`);
-                        }
-                        let role = await message.guild.roles.cache.find(x => x.name === "verified");
-                        await msg.edit(`Huh? Where am I? What is this wonderful yet mysterious place? Is that.. I see... people? *gasps* there are people here!! *squeals with excitement!!* I love people!! They are so fun to play with!! Hi ${role} I’m Mirage or Mira for short... I’m here to have all sorts of fun with you.`)
-                    })
-                }
+
 
                 //+resetbal @User
                 if (isValidCommand(message, "resetbal")) {
-                    if (!UserData[message.author.id]) {
-                        UserData[message.author.id] = {
-                            credits: 0,
-                            bratPoints: 0
+                    let memberData = await userData.findAll({
+                        raw: true,
+                        where: {
+                            UserId: await normaliseID(args[0]),
+                            GuildId: message.guild.id
                         }
-                        await writedata();
+                    });
+                    if (memberData.length != 0) {
+                        await userData.update({
+                            Credits: 0
+                        }, {
+                            where: {
+                                UserId: await normaliseID(args[0]),
+                                GuildId: message.guild.id
+                            }
+                        });
                     }
-                    await message.delete();
-                    //Get member
-                    let member = await message.guild.members.cache.get(await normaliseID(args[0]));
-                    //reset balance
-                    UserData[member.id].credits = 0;
-                    await writedata();
                     await message.guild.channels.cache.get("715756082907316304").send(`${member} has had their points reset by ${message.author}`);
                 }
 
-                //+givecredits @User 
+                //+givecredits
                 if (isValidCommand(message, "givecredits")) {
-                    //Get members ID then member data structure
-                    const args = await message.content.slice(prefix.length).trim().split(' ');
-                    await args.shift();
-                    if (!UserData[await normaliseID(args[0])]) {
-                        UserData[await normaliseID(args[0])] = {
-                            credits: 0,
-                            bratPoints: 0
+                    message.delete();
+                    let args = await message.content.split(" ");
+                    if (message.mentions.members.size === 0) return await message.channel.send("No member has been mentioned");
+                    let memberReceiver = await message.mentions.members.first();
+                    let memberDataReceiver = await userData.findAll({
+                        raw: true,
+                        logging: false,
+                        where: {
+                            UserId: memberReceiver.id,
+                            GuildId: message.guild.id
                         }
-                        await writedata();
+                    });
+                    let credstogive = args[2];
+
+                    if (memberDataReceiver.length === 0) {
+                        await userData.create({
+                            Credits: memberDataReceiver[0].Credits + credstogive,
+                            userId: memberReceiver.id,
+                            GuildId: message.guild.id
+                        }, {logging: false});
+
+                    } else {
+                        await userData.update({
+                            Credits: Credits + credstogive
+                        }, {
+                            logging: false,
+                            where: {
+                                UserId: memberReceiver.id,
+                                GuildId: message.guild.id
+                            }
+                        });
                     }
-                    let member = await message.guild.members.cache.get(await normaliseID(args[0]));
-                    await args.shift();
-                    var addcredits = parseInt(args[0]);
-                    var credits = parseInt(UserData[member.id].credits);
-                    credits = credits + addcredits;
-                    UserData[member.id].credits = credits
-                    await writedata();
                     await message.guild.channels.cache.get("715756082907316304").send(`${member} has been given ${addcredits} by ${message.author}`);
                     await message.delete();
                 }
@@ -2046,6 +2187,7 @@ client.on('message', async function (message) {
                     await message.react('<a:tick:794230124961988609>');
                 }
             }
+
 
             //Music
             {
@@ -2174,6 +2316,7 @@ client.on('message', async function (message) {
                 }
             }
 
+
             //Birthdays
             {
                 //+bd-set dd/mm birthday logging
@@ -2184,25 +2327,107 @@ client.on('message', async function (message) {
                     if (!/^\d{1,2}\/\d{1,2}$/.test(`${dd}/${mm}`)) return await message.channel.send("Your Birthday format appears to be incorrect! Please enter your birthdate in the format DD/MM. For example, if you were born on the 8th of September, your birthday would be 08/09");
                     var day = parseInt(dd, 10);
                     var month = parseInt(mm, 10);
-                    if (month === 0 || month > 12) return await message.channel.send("You have entered an invalid birth month! Please ensure you enter the day in the format MM, for example: August would be 08");
+                    if (month === 0 || month > 12) return await message.channel.send("You have entered an invalid birth month! Please ensure you enter the month in the format MM, for example: August would be 08");
                     var monthLength = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
                     if (day < 0 || day > monthLength[month - 1]) return await message.channel.send("You have entered an invalid birthdate! Please ensure you enter the day in the format DD, for example: the 8th would be 08");
-
-                    if (!birthdaysData[message.author.id]) {
-                        birthdaysData[message.author.id] = {
-                            "birthdate": `${dd}/${mm}`,
-                            "announce": "y"
-                        };
-                        await fs.writeFileSync("storage/birthdays.json", JSON.stringify(birthdaysData));
+                    let MemberData = await userData.count({
+                        where: {
+                            UserId: message.author.id,
+                            GuildId: message.guild.id
+                        }
+                    });
+                    if (MemberData === 0) {
+                        const birthday = userData.create({
+                            UserId: message.author.id,
+                            GuildId: message.guild.id,
+                            Birthday: `${dd}/${mm}`,
+                            BirthdayAnnounce: "y"
+                        })
                     } else {
-                        birthdaysData[message.author.id].birthdate = `${dd}/${mm}`;
-                        await fs.writeFileSync("storage/birthdays.json", JSON.stringify(birthdaysData));
+                        const birthday = userData.update({
+                            Birthday: `${dd}/${mm}`,
+                            BirthdayAnnounce: "y"
+                        }, {
+                            where: {
+                                UserId: message.author.id,
+                                GuildId: message.guild.id
+                            }
+                        });
                     }
                     await message.channel.send(":white_check_mark: Your birthday has been recorded!");
-                    birthdaysData = await JSON.parse(fs.readFileSync('storage/birthdays.json', 'utf8'));
+                }
+
+                //+bd-remove
+                if (isValidCommand(message, "bd-remove")) {
+                    let MemberData = await userData.count({
+                        where: {
+                            UserId: message.author.id,
+                            GuildId: message.guild.id
+                        }
+                    });
+                    if (MemberData === 0) {
+                        await message.channel.send(":white_check_mark: Your birthday has been removed!");
+                    } else {
+                        await userData.update({
+                            Birthday: "",
+                            BirthdayAnnounce: ""
+                        }, {
+                            where: {
+                                UserId: message.author.id,
+                                GuildId: message.guild.id
+                            }
+                        });
+                        await message.channel.send(":white_check_mark: Your birthday has been removed!");
+                    }
+                }
+
+                //+bd-announce
+                if (isValidCommand(message, "bd-announce")) {
+                    let MemberData = await userData.count({
+                        where: {
+                            UserId: message.author.id,
+                            GuildId: message.guild.id
+                        }
+                    });
+                    if (MemberData === 0) {
+                        await message.channel.send(":x: Please log your birthday using the command \"+bd-set DD/MM\" first!");
+                    } else {
+                        MemberData = await userData.findAll({
+                            where: {
+                                UserId: message.author.id,
+                                GuildId: message.guild.id
+                            }
+                        });
+                        MemberData = await JSON.parse(await JSON.stringify(MemberData));
+                        if (MemberData[0].Birthday === "") {
+                            await message.channel.send(":x: Please log your birthday using the command \"+bd-set DD/MM\" first!");
+                        } else if (MemberData[0].BirthdayAnnounce === "n") {
+                            await userData.update({
+                                BirthdayAnnounce: "y"
+                            }, {
+                                where: {
+                                    UserId: message.author.id,
+                                    GuildId: message.guild.id
+                                }
+                            });
+                            await message.channel.send(":white_check_mark: Your birthday has been set to announce");
+                        } else if (MemberData[0].BirthdayAnnounce === "y") {
+                            await userData.update({
+                                BirthdayAnnounce: "n"
+                            }, {
+                                where: {
+                                    UserId: message.author.id,
+                                    GuildId: message.guild.id
+                                }
+                            });
+                            await message.channel.send(":white_check_mark: Your birthday has been set to not announce");
+
+                        }
+                    }
                 }
             }
+
 
             //Misc Commands
             {
@@ -2214,6 +2439,22 @@ client.on('message', async function (message) {
                     } = await fetch('https://www.boredapi.com/api/activity').then(response => response.json());
                     await message.channel.send(`A ${type} activity you can do is ${activity}`);
                 }
+
+                //+catfact
+                if (isValidCommand(message, "catfact")) {
+                    const {
+                        fact
+                    } = await fetch('https://catfact.ninja/fact').then(response => response.json());
+                    await message.channel.send(`${fact}`);
+                }
+
+                //+dogfact
+                if (isValidCommand(message, "dogfact")) {
+                    const {
+                        facts
+                    } = await fetch('http://dog-api.kinduff.com/api/facts').then(response => response.json());
+                    await message.channel.send(`${facts}`);
+                }
             }
         }
         //In case of fatal error
@@ -2223,58 +2464,6 @@ client.on('message', async function (message) {
             await console.log(error);
         }
     }
-
-    //Hub Server commands
-    else if (message.guild.id === "787119026996248586") {
-        try {
-            //Ticketing
-            if (isValidCommand(message, "ticket")) {
-                let args = await message.content.toLowerCase().split(" ").slice(1);
-                if (args[0] === "open") {
-                    await tickets["ticketid"].value++;
-                    await writedata();
-                    args = await args.slice(1).join(" ");
-                    await message.guild.channels.create(`Ticket ${tickets["ticketid"].value} ${args}`, {
-                            parent: message.guild.channels.cache.find(chan => chan.name === "Tickets")
-                        })
-                        .then(async chan => {
-                            await message.channel.send(`Ticket created in ${chan}`)
-                                .then(async msg => {
-                                    await message.delete();
-                                    await msg.delete({
-                                        timeout: 5000
-                                    });
-
-                                })
-                        })
-                        .catch(async error => {
-                            await console.log(error);
-                        });
-                    await fs.appendFileSync(`/storage/ticket-${tickets["ticketid"].value}-${args.replace(" ", "-")}.txt`, `${args}\n`);
-                }
-                if (args[0] === "close") {
-                    if (message.channel.name.startsWith("ticket")) {
-                        await message.channel.send("Ticket closing, saving logs!");
-                        await wait(700);
-                        await message.channel.delete();
-                        var logchannel = await message.guild.channels.cache.get("787303632722460702");
-                        await logchannel.send({
-                            files: [`storage/${message.channel.name}.txt`]
-                        });
-                    }
-                }
-            }
-
-            //Ticket logging
-            if (message.channel.name.startsWith("ticket") && message.channel.name != "ticket-logs") {
-                await fs.appendFileSync(`storage/${message.channel.name}.txt`, `${message.author.username}#${message.author.discriminator} @ ${message.createdAt.substring(3, 25)}: ${message.content}\n\n`);
-            }
-        } catch (err) {
-            message.channel.send("Something went wrong, please open a ticket and ask skye to look into it!");
-            console.log(err);
-        }
-    }
-
 });
 
 //Logging
@@ -2322,18 +2511,18 @@ client.on('message', async function (message) {
                 }
             });
         }
+
+        await userData.destroy({
+            where: {
+                UserId: `${member.id}`,
+                GuildId: `715701127181631527`
+            }
+        });
     });
 }
 
 //Login to the discord API
 client.login(process.env.TOKEN);
-
-
-//
-//
-//FUNCTIONS BELOW THIS POINT. CAN BE CALLED WHEN NEEDED
-//
-//
 
 
 
@@ -2345,16 +2534,12 @@ async function normaliseID(id) {
 
 //Write userdata to file
 async function writedata() {
-    //write data to file - deployment
-    await fs.writeFile('storage/userData.json', JSON.stringify(UserData), (err) => {
-        if (err) console.log(err);
-    });
     await fs.writeFile('storage/tickets.json', JSON.stringify(tickets), (err) => {
         if (err) console.log(err);
     });
 }
 
-
+//Play Music
 async function play(guild, song) {
     const serverQueue = queue.get(guild.id);
 
