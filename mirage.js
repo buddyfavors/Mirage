@@ -460,6 +460,7 @@ client.on('message', async function (message) {
                     MessageCount = 0;
                     let memberData = await userData.findAll({
                         raw: true,
+                        logging: false,
                         where: {
                             UserId: message.author.id,
                             GuildId: message.guild.id
@@ -470,12 +471,18 @@ client.on('message', async function (message) {
                             GuildId: message.guild.id,
                             userId: message.author.id,
                             Credits: 30
+                        }, {
+                            logging: false
                         })
                     } else {
                         await userData.update({
-                            GuildId: message.guild.id,
-                            userId: message.author.id,
                             Credits: memberData[0].Credits + 30
+                        }, {
+                            logging: false,
+                            where:{
+                                GuildId: message.guild.id,
+                                userId: message.author.id
+                            }
                         })
                     }
                     await message.channel.send(`${message.author} Collected 30 Credits`)
